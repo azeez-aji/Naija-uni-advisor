@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>NaijaUni Advisor — Know your admission chances</title>
+<meta name="description" content="Check your JAMB admission chances instantly. Enter your UTME score, O'Level results and target course to get an honest, evidence-based verdict, real alternatives, and career outlook.">
+<meta name="theme-color" content="#0B2B29">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,500;0,600;0,700;1,500;1,600&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="topbar">
+  <a href="/" class="brand" onclick="event.preventDefault(); state.step=0; state.result=null; saveState(); render();">
+    <span class="brand-mark">
+      <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M2 11L6 8L9 10L14 4" stroke="#E3A23C" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M2 13.5H14" stroke="#F6F8F7" stroke-width="1.6" stroke-linecap="round"/>
+      </svg>
+    </span>
+    NaijaUni Advisor
+  </a>
+  <button id="install-btn" hidden>Install app</button>
+</div>
+
+<main id="app"></main>
+
+<footer>
+  Independent admissions estimate tool · Not affiliated with JAMB · Data reflects the 2026/2027 admissions cycle
+</footer>
+
+<script src="data.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
