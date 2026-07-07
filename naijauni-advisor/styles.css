@@ -90,6 +90,9 @@ main { max-width: var(--max-width); margin: 0 auto; padding: 20px 20px 80px; }
   letter-spacing: 0.12em; color: var(--teal-600); text-transform: uppercase; margin: 0 0 14px;
 }
 .hero-sub { font-size: 1.08rem; color: var(--ink-muted); max-width: 52ch; }
+.hero-actions { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 22px; }
+.hero-actions .btn-ghost { text-decoration: none; display: inline-flex; align-items: center; }
+.cbt-link { margin-top: 6px; text-decoration: none; display: inline-flex; align-items: center; }
 
 .trust-strip {
   display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px;
