@@ -15,6 +15,7 @@ manifest.json + sw.js         # PWA install + offline caching
 icons/                        # app icons
 netlify.toml                  # Netlify build config
 netlify/functions/deep-analysis.js   # serverless function powering the AI deep-dive
+cbt-exam.html                  # standalone JAMB CBT practice exam, linked from the app
 ```
 
 ## Deploy it (same flow you already use for Hasbal Global Solutions)
@@ -72,3 +73,23 @@ dataset can't (recent cut-off announcements, Post-UTME format changes, etc.).
 It costs a small amount per request against your Anthropic account — there's
 no rate limiting built in yet, so if this gets real traffic, consider adding
 a simple per-IP rate limit in the function before it goes wide.
+
+## Troubleshooting
+
+- **"Page not found" on the live URL:** almost always means the repo has an
+  extra folder level (e.g. files sitting inside `naijauni-advisor/naijauni-advisor/`
+  instead of at the repo root). Either flatten the repo so `index.html` sits
+  directly at the root, or in Netlify set **Base directory**, **Publish
+  directory**, and **Functions directory** to point at the actual subfolder.
+- **AI deep-dive fails even with `ANTHROPIC_API_KEY` set:** check the model ID
+  in `deep-analysis.js` is current — Anthropic ships new model versions
+  regularly and an outdated ID returns an error that looks identical to a
+  missing/invalid key from the front end. Check Netlify's function logs
+  (Project → Logs & metrics → Functions) for the actual upstream error rather
+  than guessing from the browser.
+- **Want zero ongoing AI cost:** the rule-based verdict (the whole wizard +
+  results screen) needs no API key at all and works fully offline. You can
+  ship the site without ever setting `ANTHROPIC_API_KEY` — the deep-dive
+  button will just show its "couldn't reach the service" message, and
+  everything else works normally.
+
