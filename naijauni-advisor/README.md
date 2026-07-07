@@ -18,9 +18,9 @@ netlify/functions/deep-analysis.js   # serverless function powering the AI deep-
 cbt-exam.html                  # standalone JAMB CBT practice exam, linked from the app
 ```
 
-## Deploy it (same flow you already use for Hasbal Global Solutions)
+## Deploy it
 
-1. **Create a new GitHub repo** — e.g. `AbuKhayrAZ/naijauni-advisor`. Upload every
+1. **Create a new GitHub repo** —  Upload every
    file in this folder, keeping the folder structure intact (especially
    `netlify/functions/deep-analysis.js` — it must stay in that exact path).
 2. **Connect it in Netlify** — "Add new site" → "Import an existing project" →
@@ -46,7 +46,7 @@ cbt-exam.html                  # standalone JAMB CBT practice exam, linked from 
 
 ## How the verdict is calculated
 
-For transparency (and so you can defend it to a skeptical parent or student):
+For transparency
 
 1. Checks O'Level credits (A1–C6) against the course's required + alternative
    subjects, and confirms a credit in English Language.
