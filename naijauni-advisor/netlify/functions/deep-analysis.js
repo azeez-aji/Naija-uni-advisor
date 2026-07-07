@@ -71,11 +71,11 @@ Do not repeat the full profile back to the student — get straight to the analy
         "anthropic-version": "2023-06-01"
       },
       body: JSON.stringify({
-        model: "claude-sonnet-4-6",
+        model: "claude-sonnet-5",
         max_tokens: 1200,
         system: systemPrompt,
         messages: [{ role: "user", content: userPrompt }],
-        tools: [{ type: "web_search_20250305", name: "web_search" }]
+        tools: [{ type: "web_search_20260318", name: "web_search" }]
       })
     });
 
