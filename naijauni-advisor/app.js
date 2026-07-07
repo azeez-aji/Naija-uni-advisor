@@ -317,7 +317,10 @@ function renderLanding() {
     el("h1", {}, ["Find out if your score ", el("em", {}, "clears the bar"), " — before JAMB does."]),
     el("p", { class: "hero-sub" }, "Enter your JAMB score, O'Level results, and target course. Get an honest, instant read on your admission chances, real alternatives, and a next-step plan — no false hope, no guesswork."),
     renderCutoffBar(0, 200, "demo"),
-    el("button", { class: "btn btn-primary btn-lg", onclick: startWizard }, "Check my chances →")
+    el("div", { class: "hero-actions" }, [
+      el("button", { class: "btn btn-primary btn-lg", onclick: startWizard }, "Check my chances →"),
+      el("a", { class: "btn btn-ghost btn-lg", href: "cbt-exam.html", target: "_blank", rel: "noopener" }, "Take a CBT practice exam")
+    ])
   ]);
 
   const trust = el("section", { class: "trust-strip" }, [
@@ -643,7 +646,8 @@ function renderResults() {
 
   const planCard = el("div", { class: "card" }, [
     el("h2", {}, "Your next steps"),
-    el("ol", { class: "action-plan" }, ACTION_PLANS[r.band].map(step => el("li", {}, step)))
+    el("ol", { class: "action-plan" }, ACTION_PLANS[r.band].map(step => el("li", {}, step))),
+    el("a", { class: "btn btn-ghost cbt-link", href: "cbt-exam.html", target: "_blank", rel: "noopener" }, "Sharpen your score with a CBT practice exam →")
   ]);
   container.appendChild(planCard);
 
