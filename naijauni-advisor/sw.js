@@ -1,8 +1,11 @@
-// Minimal offline-first service worker.
-// The AI deep-dive feature needs network; everything else (the wizard
-// and the rule-based verdict) is designed to work fully offline once cached.
+// Network-first service worker.
+// Always tries the network first so returning visitors get the latest
+// deployed content immediately — falls back to cache only when offline.
+// (An earlier cache-first version could serve stale pages indefinitely
+// to returning visitors, especially on Android where service workers
+// persist more aggressively than on desktop.)
 
-const CACHE_NAME = "naijauni-advisor-v1";
+const CACHE_NAME = "naijauni-advisor-v2";
 const PRECACHE_URLS = [
   "/",
   "/index.html",
@@ -11,7 +14,8 @@ const PRECACHE_URLS = [
   "/app.js",
   "/manifest.json",
   "/icons/icon-192.png",
-  "/icons/icon-512.png"
+  "/icons/icon-512.png",
+  "/cbt-exam.html"
 ];
 
 self.addEventListener("install", (event) => {
@@ -35,19 +39,17 @@ self.addEventListener("fetch", (event) => {
 
   // Never cache API/function calls — always go to network.
   if (url.pathname.startsWith("/.netlify/functions/")) return;
+  if (event.request.method !== "GET") return;
 
   event.respondWith(
-    caches.match(event.request).then((cached) => {
-      const networkFetch = fetch(event.request)
-        .then((response) => {
-          if (response && response.status === 200 && event.request.method === "GET") {
-            const clone = response.clone();
-            caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone));
-          }
-          return response;
-        })
-        .catch(() => cached);
-      return cached || networkFetch;
-    })
+    fetch(event.request)
+      .then((response) => {
+        if (response && response.status === 200) {
+          const clone = response.clone();
+          caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone));
+        }
+        return response;
+      })
+      .catch(() => caches.match(event.request))
   );
 });
