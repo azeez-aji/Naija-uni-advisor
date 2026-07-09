@@ -18,9 +18,9 @@ netlify/functions/deep-analysis.js   # serverless function powering the AI deep-
 cbt-exam.html                  # standalone JAMB CBT practice exam, linked from the app
 ```
 
-## Deploy it
+## Deploy it (same flow you already use for Hasbal Global Solutions)
 
-1. **Create a new GitHub repo** —  Upload every
+1. **Create a new GitHub repo** — e.g. `AbuKhayrAZ/naijauni-advisor`. Upload every
    file in this folder, keeping the folder structure intact (especially
    `netlify/functions/deep-analysis.js` — it must stay in that exact path).
 2. **Connect it in Netlify** — "Add new site" → "Import an existing project" →
@@ -46,24 +46,51 @@ cbt-exam.html                  # standalone JAMB CBT practice exam, linked from 
 
 ## How the verdict is calculated
 
-For transparency
+This was substantially reworked based on real feedback — the first version scored
+purely on JAMB number vs. a made-up "realistic threshold," which isn't how Nigerian
+admissions actually work. Here's the current, more honest version:
 
-1. Checks O'Level credits (A1–C6) against the course's required + alternative
-   subjects, and confirms a credit in English Language.
-2. Compares the JAMB score against the institution's known 2026/2027 minimum
-   admissible score (falls back to JAMB's national minimum — 150 for
-   universities, 100 for polytechnics, 150 for nursing colleges — when a
-   specific figure isn't on file).
-3. Adds a "realistic competitiveness" bonus on top of that minimum, based on
-   how oversubscribed the course tier tends to run nationally (Medicine/Law/
-   Pharmacy add the most; Education/Arts add the least), informed by publicly
-   reported 2026 cut-off patterns.
-4. A subject-combination mismatch or a score below the institution's actual
-   minimum always caps the verdict at "Very Low" — no score can compensate for
-   a hard eligibility gap.
+1. **O'Level isn't just pass/fail anymore.** Each credit (A1–C6) contributes a
+   grade point (A1=1 … C6=6, the same convention several institutions use
+   directly). The best 5 relevant credits are converted into an "O'Level
+   strength" percentage — an all-A1 profile scores ~100%, an all-C6 profile
+   scores ~40%. A1s and C6s now genuinely produce different verdicts.
+2. **Admission is an aggregate, not just JAMB.** Most Nigerian institutions
+   rank candidates by a blended score — JAMB + Post-UTME + (sometimes)
+   O'Level — not JAMB alone. `data.js` carries a `weights` field per
+   institution (`{jamb, postUtme, olevel}`). Where an institution's actual
+   published formula was corroborated (UNILAG, OAU, UNIBEN, BUK, UNICAL,
+   FUTA, LASU), it's used directly and marked `formulaConfidence: "verified"`.
+   Every other institution falls back to the commonly-reported general
+   pattern (50% JAMB / 30% Post-UTME / 20% O'Level, or 50/50 JAMB/O'Level for
+   schools that don't run Post-UTME) and is marked `"estimated"` — the app
+   says so on the results screen, not just in this file.
+3. **Post-UTME: target, not guess.** Since most students use this tool
+   *before* sitting Post-UTME, the app doesn't ask them to invent a score.
+   Instead it solves the institution's own formula backwards and tells them
+   what Post-UTME score they'd need to clear the line or sit solidly in
+   "Strong" territory. If they've actually sat it, there's an optional field
+   on the results screen to plug in the real score for an updated verdict —
+   that live-recomputes via `computeAssessment()`.
+4. A subject-combination mismatch or a JAMB score below the institution's
+   actual minimum still hard-caps the verdict at "Very Low" — no aggregate
+   score compensates for a hard eligibility gap.
 
-This is **an estimate, not an admission decision** — the app says so
-throughout, and it should keep saying so if you extend it.
+None of this replaces checking the institution's own admissions portal —
+formulas and cut-offs get revised yearly and the app says so throughout.
+
+## Institution coverage
+
+104 institutions across federal/state/private universities, polytechnics,
+and colleges of education — up from an initial ~30. Cut-off figures beyond
+each type's JAMB national minimum are publicly reported for oversubscribed
+institutions and were cross-checked against multiple sources during
+research; expect some drift year to year (LAUTECH alone was reported as
+160, 170, and 180 across different sites while building this — 170 was
+used as the most commonly cited figure). "Other [type] (not listed)"
+entries exist for anything not individually covered, using the JAMB
+national minimum for that institution type.
+
 
 ## The AI deep-dive
 
@@ -92,4 +119,14 @@ a simple per-IP rate limit in the function before it goes wide.
   ship the site without ever setting `ANTHROPIC_API_KEY` — the deep-dive
   button will just show its "couldn't reach the service" message, and
   everything else works normally.
+- **A device (often Android) is stuck showing an old version of the site:**
+  this was a real bug, now fixed — `sw.js` used to serve cached pages first
+  and only refresh the cache in the background, so returning visitors could
+  be stuck on stale content indefinitely (Android holds onto service workers
+  more persistently than desktop browsers typically do). It's now
+  network-first: online visitors always get the latest deploy, and the cache
+  is only used as an offline fallback. If a specific device is still stuck
+  after you've redeployed, one visit while online will self-heal it — or as
+  a manual fix: Chrome on Android → Settings → Site settings → find the
+  site → **Clear & reset**.
 
