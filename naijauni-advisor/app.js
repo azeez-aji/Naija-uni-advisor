@@ -11,6 +11,7 @@ const state = {
   sittings: 1, // 1 or 2 (single sitting vs combined WAEC/NECO)
   courseId: null,
   institutionId: null,
+  postUtmeScore: "",
   careerInterests: "",
   result: null
 };
@@ -119,11 +120,19 @@ function createSearchableSelect({ items, getLabel, getSubLabel, placeholder, ini
 
 /* =========================================================
    Assessment engine (rule-based, runs entirely client-side)
+
+   Computes an AGGREGATE score the way most Nigerian institutions
+   actually rank candidates — JAMB + (where applicable) Post-UTME +
+   O'Level grade quality — rather than JAMB score alone. See the
+   methodology note at the top of data.js for how the weights are
+   sourced and what's estimated vs. specifically verified.
    ========================================================= */
 function computeAssessment() {
   const course = getCourse(state.courseId);
   const inst = getInstitution(state.institutionId);
   const score = Number(state.jambScore);
+  const postUtmeRaw = state.postUtmeScore;
+  const postUtme = postUtmeRaw !== "" && postUtmeRaw != null && !isNaN(Number(postUtmeRaw)) ? Number(postUtmeRaw) : null;
 
   const credits = state.olevel.filter(r => CREDIT_GRADES.includes(r.grade));
   const creditSubjects = new Set(credits.map(r => r.subject));
@@ -133,25 +142,44 @@ function computeAssessment() {
   const requiredNonEnglish = (course.required || []).filter(s => s !== "English Language");
   const missingRequired = requiredNonEnglish.filter(s => !creditSubjects.has(s));
   const oneOfOk = !course.oneOf || course.oneOf.some(s => creditSubjects.has(s));
-
   const subjectCombinationMet = missingRequired.length === 0 && oneOfOk && hasEnglish;
 
   const instMin = getInstitutionMinimum(inst);
-  const prestigeBonus = (inst.prestige - 1) * PRESTIGE_POINTS;
-  const threshold = instMin + TIER_BONUS[course.tier] + prestigeBonus;
-
   const belowLegalMinimum = score < instMin;
+
+  // ---- Aggregate score ----
+  const jambPct = (score / 400) * 100;
+  const olevelPct = computeOlevelStrength(state.olevel, course);
+  const baseWeights = weightsFor(inst);
+  const postUtmeIncluded = inst.hasPostUTME && postUtme != null;
+
+  let w = baseWeights;
+  if (inst.hasPostUTME && !postUtmeIncluded) {
+    // No Post-UTME score yet — redistribute its weight proportionally
+    // across JAMB and O'Level rather than pretending it's zero.
+    const remaining = baseWeights.jamb + baseWeights.olevel;
+    w = remaining > 0
+      ? { jamb: baseWeights.jamb / remaining, postUtme: 0, olevel: baseWeights.olevel / remaining }
+      : { jamb: 1, postUtme: 0, olevel: 0 };
+  }
+
+  const aggregatePct = Math.round(
+    (w.jamb * jambPct + w.postUtme * (postUtme || 0) + w.olevel * olevelPct) * 10
+  ) / 10;
+
+  const threshold = tierThreshold(course.tier, inst.prestige);
+  const belowThreshold = aggregatePct < threshold;
 
   let band;
   if (!subjectCombinationMet || belowLegalMinimum) {
     band = "very_low";
-  } else if (score >= threshold + 25) {
+  } else if (aggregatePct >= threshold + 10) {
     band = "very_strong";
-  } else if (score >= threshold + 5) {
+  } else if (aggregatePct >= threshold + 3) {
     band = "strong";
-  } else if (score >= threshold - 15) {
+  } else if (aggregatePct >= threshold - 8) {
     band = "moderate";
-  } else if (score >= threshold - 40) {
+  } else if (aggregatePct >= threshold - 18) {
     band = "low";
   } else {
     band = "very_low";
@@ -159,7 +187,7 @@ function computeAssessment() {
 
   const concerns = [];
   if (belowLegalMinimum) {
-    concerns.push(`Your JAMB score (${score}) is below ${inst.name}'s minimum admissible score (${instMin}) for the 2026/2027 session — institutions are not permitted to admit below this line.`);
+    concerns.push(`Your JAMB score (${score}) is below ${inst.name}'s minimum admissible score (${instMin}) — institutions aren't permitted to admit below this line.`);
   }
   if (!hasEnglish) {
     concerns.push("A credit pass in English Language is missing — this is compulsory for every course and institution in Nigeria.");
@@ -173,8 +201,11 @@ function computeAssessment() {
   if (creditCount < 5) {
     concerns.push(`Only ${creditCount} credit pass(es) recorded — most institutions require a minimum of 5 credits, including English (and Mathematics for most Science/Management courses).`);
   }
-  if (score < threshold && subjectCombinationMet && !belowLegalMinimum) {
-    concerns.push(`${course.name} at ${inst.name} realistically trends nearer ${threshold} based on how competitive this course tier tends to run — your score sits below that line.`);
+  if (inst.hasPostUTME && !postUtmeIncluded) {
+    concerns.push(`${inst.name} also runs a Post-UTME screening that carries real weight in the final decision (typically ${Math.round(baseWeights.postUtme * 100)}% of the aggregate here) — this verdict reflects JAMB + O'Level only. Add your Post-UTME score once you have it for a sharper read.`);
+  }
+  if (belowThreshold && subjectCombinationMet && !belowLegalMinimum) {
+    concerns.push(`${course.name} at ${inst.name} realistically trends nearer an aggregate of ${threshold}% based on how competitive this course tends to run there — your estimated aggregate (${aggregatePct}%) sits below that line.`);
   }
 
   const metRequirements = [];
@@ -185,28 +216,65 @@ function computeAssessment() {
     if (matched) metRequirements.push(`Credit pass in ${matched} (satisfies the ${course.oneOf.join("/")} requirement)`);
   }
   if (!belowLegalMinimum) metRequirements.push(`JAMB score meets ${inst.name}'s minimum admissible score (${instMin})`);
+  if (olevelPct >= 80) metRequirements.push(`Strong O'Level grade profile (≈${olevelPct}% strength) — this pulls real weight in most aggregate formulas`);
 
-  const alternatives = buildAlternatives({ course, inst, score, subjectCombinationMet, threshold });
+  const postUtmeTarget = computePostUtmeTarget({ inst, baseWeights, jambPct, olevelPct, threshold });
+
+  const alternatives = buildAlternatives({ course, inst, score, olevelPct, subjectCombinationMet, aggregatePct, threshold });
 
   return {
-    course, inst, score, threshold, instMin, band,
-    creditCount, subjectCombinationMet, concerns, metRequirements, alternatives
+    course, inst, score, postUtme, threshold, instMin, band,
+    creditCount, subjectCombinationMet, concerns, metRequirements, alternatives,
+    jambPct: Math.round(jambPct * 10) / 10, olevelPct, aggregatePct, weights: w,
+    postUtmeIncluded, formulaConfidence: inst.formulaConfidence, postUtmeTarget
   };
 }
 
-function buildAlternatives({ course, inst, score, subjectCombinationMet, threshold }) {
+// What Post-UTME score (out of 100) would the candidate need at THIS
+// institution to reach "moderate" (the pass line) and "strong"? Solves
+// the institution's own aggregate formula backwards using JAMB + O'Level
+// as fixed inputs. This is what the student should aim for, not a field
+// for a score they likely don't have yet.
+function computePostUtmeTarget({ inst, baseWeights, jambPct, olevelPct, threshold }) {
+  if (!inst.hasPostUTME || baseWeights.postUtme <= 0) return null;
+
+  function solveFor(targetAggregate) {
+    const fixed = baseWeights.jamb * jambPct + baseWeights.olevel * olevelPct;
+    const needed = (targetAggregate - fixed) / baseWeights.postUtme;
+    return Math.round(Math.max(0, Math.min(100, needed)));
+  }
+
+  const toModerate = solveFor(threshold);
+  const toStrong = solveFor(threshold + 3);
+  const alreadyAtModerate = (baseWeights.jamb * jambPct + baseWeights.olevel * olevelPct) >= threshold;
+  const impossible = (threshold + 3 - (baseWeights.jamb * jambPct + baseWeights.olevel * olevelPct)) / baseWeights.postUtme > 100;
+
+  return { toModerate, toStrong, alreadyAtModerate, impossible, weightPct: Math.round(baseWeights.postUtme * 100) };
+}
+
+function buildAlternatives({ course, inst, score, olevelPct, subjectCombinationMet, aggregatePct, threshold }) {
   const alts = [];
+  const jambPct = (score / 400) * 100;
+
+  // Compare on a common, fair basis: JAMB + O'Level only (no institution's
+  // Post-UTME score transfers to a different institution's own screening).
+  function noPostUtmeAggregate(candidateInst) {
+    const cw = weightsFor(candidateInst);
+    const remaining = cw.jamb + cw.olevel;
+    const rw = remaining > 0 ? { jamb: cw.jamb / remaining, olevel: cw.olevel / remaining } : { jamb: 1, olevel: 0 };
+    return rw.jamb * jambPct + rw.olevel * olevelPct;
+  }
 
   const cheaperInstitutions = INSTITUTIONS
     .filter(i => i.id !== inst.id && i.minCutoff != null)
-    .map(i => ({ inst: i, thresh: getInstitutionMinimum(i) + TIER_BONUS[course.tier] + (i.prestige - 1) * PRESTIGE_POINTS }))
-    .filter(x => x.thresh <= score)
-    .sort((a, b) => b.thresh - a.thresh);
+    .map(i => ({ inst: i, agg: Math.round(noPostUtmeAggregate(i) * 10) / 10, thresh: tierThreshold(course.tier, i.prestige) }))
+    .filter(x => x.agg >= x.thresh)
+    .sort((a, b) => (b.agg - b.thresh) - (a.agg - a.thresh));
   if (cheaperInstitutions.length > 0) {
     const pick = cheaperInstitutions[0];
     alts.push({
       title: `${course.name} at ${pick.inst.name}`,
-      why: `Your score comfortably clears the realistic band here (≈${pick.thresh}), versus ≈${threshold} at ${inst.name}.`
+      why: `On a JAMB + O'Level basis your estimated aggregate here (≈${pick.agg}%) clears the realistic line (≈${pick.thresh}%), versus a tighter fit at ${inst.name}.`
     });
   }
 
@@ -214,17 +282,17 @@ function buildAlternatives({ course, inst, score, subjectCombinationMet, thresho
     .filter(c => c.id !== course.id && c.category === course.category && c.tier < course.tier)
     .sort((a, b) => b.tier - a.tier)[0];
   if (relatedCourse) {
-    const relThreshold = getInstitutionMinimum(inst) + TIER_BONUS[relatedCourse.tier] + (inst.prestige - 1) * PRESTIGE_POINTS;
+    const relThreshold = tierThreshold(relatedCourse.tier, inst.prestige);
     alts.push({
       title: `${relatedCourse.name} at ${inst.name}`,
-      why: `A related field in the same faculty area with a more attainable realistic band (≈${relThreshold}) — worth considering as a Post-UTME second choice.`
+      why: `A related field in the same faculty area with a more attainable realistic aggregate (≈${relThreshold}%) — worth considering as a Post-UTME second choice.`
     });
   } else {
     const fallback = COURSES.filter(c => c.tier <= 2 && c.id !== course.id)[0];
     if (fallback) {
       alts.push({
         title: `${fallback.name} at ${inst.name}`,
-        why: "A less oversubscribed course that keeps you in a related academic track while easing the score pressure."
+        why: "A less oversubscribed course that keeps you in a related academic track while easing the aggregate pressure."
       });
     }
   }
@@ -234,10 +302,10 @@ function buildAlternatives({ course, inst, score, subjectCombinationMet, thresho
       title: "Direct Entry via IJMB / JUPEB",
       why: "A one-year A-Level-equivalent programme (IJMB or JUPEB) can let you enter at 200 level and often has more flexible subject-combination rules than fresh UTME entry."
     });
-  } else if (score < threshold) {
+  } else if (aggregatePct < threshold) {
     alts.push({
       title: "Register for Post-UTME at 2–3 institutions",
-      why: "JAMB's CAPS system lets you hold admission offers from multiple institutions — apply broadly rather than pinning hopes on one school."
+      why: "JAMB's CAPS system lets you hold admission offers from multiple institutions — apply broadly rather than pinning hopes on one school, and Post-UTME performance can meaningfully shift your aggregate."
     });
   } else {
     alts.push({
@@ -356,7 +424,9 @@ function howCard(num, title, body) {
   ]);
 }
 
-function renderCutoffBar(score, threshold, mode) {
+function renderCutoffBar(score, threshold, mode, opts = {}) {
+  const unit = opts.unit || "";
+  const label = opts.label || "score";
   const max = Math.max(score, threshold) * 1.25 || 100;
   const scorePct = Math.min(100, (score / max) * 100);
   const threshPct = Math.min(100, (threshold / max) * 100);
@@ -364,14 +434,91 @@ function renderCutoffBar(score, threshold, mode) {
   const wrap = el("div", { class: "cutoff-bar " + (mode === "demo" ? "cutoff-bar-demo" : "") });
   wrap.appendChild(el("div", { class: "cutoff-track" }, [
     el("div", { class: "cutoff-fill " + (cleared ? "cleared" : "short"), style: `width:${scorePct}%` }),
-    el("div", { class: "cutoff-mark", style: `left:${threshPct}%` }, el("span", { class: "cutoff-mark-label mono" }, mode === "demo" ? "the bar" : String(threshold)))
+    el("div", { class: "cutoff-mark", style: `left:${threshPct}%` }, el("span", { class: "cutoff-mark-label mono" }, mode === "demo" ? "the bar" : String(threshold) + unit))
   ]));
   if (mode !== "demo") {
     wrap.appendChild(el("div", { class: "cutoff-caption" }, [
-      el("span", { class: "mono score-readout" }, String(score)),
-      el("span", {}, cleared ? " clears the realistic line" : " sits below the realistic line")
+      el("span", { class: "mono score-readout" }, String(score) + unit),
+      el("span", {}, ` ${label} ` + (cleared ? "clears the realistic line" : "sits below the realistic line"))
     ]));
   }
+  return wrap;
+}
+
+/* ---------- aggregate breakdown + Post-UTME target ---------- */
+function renderAggregateBreakdown(r) {
+  const wrap = el("div", { class: "card breakdown-card" });
+  wrap.appendChild(el("h2", {}, "How this aggregate is built"));
+
+  const confidenceNote = r.formulaConfidence === "verified"
+    ? "This weighting matches a formula publicly published by this institution."
+    : "This institution hasn't published a specific formula we could verify — this uses the common general pattern instead. Confirm on their admissions portal.";
+  wrap.appendChild(el("p", { class: "step-hint" }, confidenceNote));
+
+  const rows = [
+    { label: "JAMB score", pct: r.jambPct, weight: Math.round(r.weights.jamb * 100) },
+    { label: "O'Level grade strength", pct: r.olevelPct, weight: Math.round(r.weights.olevel * 100) }
+  ];
+  if (r.inst.hasPostUTME) {
+    rows.push({
+      label: r.postUtmeIncluded ? "Post-UTME score" : "Post-UTME (not yet available)",
+      pct: r.postUtmeIncluded ? r.postUtme : null,
+      weight: r.postUtmeIncluded ? Math.round(r.weights.postUtme * 100) : 0
+    });
+  }
+
+  wrap.appendChild(el("div", { class: "breakdown-rows" }, rows.map(row => el("div", { class: "breakdown-row" }, [
+    el("div", { class: "breakdown-row-top" }, [
+      el("span", {}, row.label),
+      el("span", { class: "mono" }, row.pct == null ? "—" : `${row.pct}% × ${row.weight}%`)
+    ]),
+    el("div", { class: "breakdown-bar-track" }, el("div", { class: "breakdown-bar-fill", style: `width:${row.pct || 0}%` }))
+  ]))));
+
+  wrap.appendChild(el("div", { class: "breakdown-total" }, [
+    el("span", {}, "Estimated aggregate"),
+    el("span", { class: "mono" }, `${r.aggregatePct}%`)
+  ]));
+
+  // Post-UTME target guidance — what to aim for, not what they've scored
+  if (r.postUtmeTarget && !r.postUtmeIncluded) {
+    const t = r.postUtmeTarget;
+    wrap.appendChild(el("div", { class: "putme-target" }, [
+      el("h3", {}, "🎯 Post-UTME target at " + r.inst.name),
+      t.impossible
+        ? el("p", {}, `Post-UTME only carries ${t.weightPct}% of the aggregate here — even a perfect score can't fully offset the current JAMB + O'Level gap. A stronger move is boosting your JAMB score or targeting an alternative below.`)
+        : t.alreadyAtModerate
+          ? el("p", {}, `Your JAMB + O'Level profile alone already clears the realistic line here. Post-UTME carries ${t.weightPct}% of the aggregate — anything above ${t.toStrong}/100 keeps you comfortably in "Strong" territory.`)
+          : el("p", {}, [
+              `Post-UTME carries ${t.weightPct}% of the aggregate at ${r.inst.name}. Based on your JAMB + O'Level profile, aim for at least `,
+              el("strong", {}, `${t.toModerate}/100`),
+              ` to clear the realistic line, or `,
+              el("strong", {}, `${t.toStrong}/100`),
+              ` to sit solidly in "Strong" territory.`
+            ]),
+      el("p", { class: "putme-note" }, "Once you've actually sat the Post-UTME, enter your real score below for an updated verdict.")
+    ]));
+  }
+
+  // Optional: plug in a real Post-UTME score once available
+  if (r.inst.hasPostUTME) {
+    const inputRow = el("div", { class: "putme-input-row" });
+    const input = el("input", {
+      type: "number", class: "putme-input", min: "0", max: "100",
+      placeholder: "Actual Post-UTME score (0-100)", value: state.postUtmeScore || ""
+    });
+    const btn = el("button", {
+      class: "btn btn-ghost btn-sm", onclick: () => {
+        state.postUtmeScore = input.value;
+        state.result = computeAssessment();
+        saveState();
+        render();
+      }
+    }, "Recalculate verdict");
+    inputRow.append(input, btn);
+    wrap.appendChild(inputRow);
+  }
+
   return wrap;
 }
 
@@ -559,7 +706,7 @@ function stepInstitution() {
       return a.name.localeCompare(b.name);
     }),
     getLabel: i => i.name,
-    getSubLabel: i => `${i.type.replace("_", " ")}${i.state !== "—" ? " · " + i.state : ""}`,
+    getSubLabel: i => `${i.type.replace(/_/g, " ")}${i.state !== "—" ? " · " + i.state : ""}`,
     getId: i => i.id,
     initialId: state.institutionId,
     placeholder: "Search for a university, polytechnic…",
@@ -603,7 +750,7 @@ function renderResults() {
     el("span", { class: "verdict-label" }, meta.label),
     el("span", { class: "verdict-desc" }, meta.desc)
   ]));
-  slip.appendChild(renderCutoffBar(r.score, r.threshold, "results"));
+  slip.appendChild(renderCutoffBar(r.aggregatePct, r.threshold, "results", { unit: "%", label: "Estimated aggregate" }));
 
   slip.appendChild(el("div", { class: "profile-grid" }, [
     profileCell("JAMB Score", r.score, true),
@@ -612,6 +759,8 @@ function renderResults() {
     profileCell("Intended Institution", r.inst.name)
   ]));
   container.appendChild(slip);
+
+  container.appendChild(renderAggregateBreakdown(r));
 
   const assessCard = el("div", { class: "card" }, [
     el("h2", {}, "Admission assessment"),
