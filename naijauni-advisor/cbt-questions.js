@@ -1,5 +1,3 @@
-**File 1:** `cbt-questions.js`
-```javascript
 // ====================================================
 // Hasbal Tutorial Centre — JAMB UTME Question Bank
 // ====================================================
