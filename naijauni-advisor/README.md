@@ -18,12 +18,12 @@ netlify/functions/deep-analysis.js   # serverless function powering the AI deep-
 cbt-exam.html                  # standalone JAMB CBT practice exam, linked from the app
 ```
 
-## Deploy it (same flow you already use for Hasbal Global Solutions)
+## Deploy it
 
 1. **Create a new GitHub repo** — e.g. `AbuKhayrAZ/naijauni-advisor`. Upload every
    file in this folder, keeping the folder structure intact (especially
    `netlify/functions/deep-analysis.js` — it must stay in that exact path).
-2. **Connect it in Netlify** — "Add new site" → "Import an existing project" →
+2. **Connect it in Netlify or any other** — "Add new site" → "Import an existing project" →
    pick the new repo. Build settings are already defined in `netlify.toml`, so
    you can leave the build command blank and publish directory as `.`.
 3. **Add your Anthropic API key** — in Netlify: Site settings → Environment
