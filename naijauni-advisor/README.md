@@ -20,16 +20,15 @@ netlify/functions/deep-analysis.js   # optional AI deep-dive (needs ANTHROPIC_AP
 
 ## The three parts, and how they connect
 
-1. **Advisor** — course + institution + score → honest verdict, then links to practise exactly the subjects that course needs.
-2. **Practice centre** — one subject at a time; filter by topic and difficulty; Learn mode (instant explanation) or Exam mode; flag questions; retry the ones you missed; progress stored on the student's device.
-3. **Full mock** — 4 subjects, 180 questions, 2 hours. Each paper is sampled from the bank, so no two attempts are identical. Results list the weakest topics and link straight back into the practice centre.
+1. **Advisor** : course + institution + score → honest verdict, then links to practise exactly the subjects that course needs.
+2. **Practice centre** : one subject at a time; filter by topic and difficulty; Learn mode (instant explanation) or Exam mode; flag questions; retry the ones you missed; progress stored on the student's device.
+3. **Full mock** : 4 subjects, 180 questions, 2 hours. Each paper is sampled from the bank, so no two attempts are identical. Results list the weakest topics and link straight back into the practice centre.
 
 All three read the same `questions.js`, so there is one answer key.
 
 ## Hosting recommendation
 
-Keep the app on Netlify and give it its own subdomain, e.g. **jamb.hasbal.com.ng** (Netlify → Domain management → Add domain; at your DNS provider add a `CNAME` for `jamb` pointing to your `*.netlify.app` address). Keep **blog.hasbal.com.ng** for articles that link into the app. Blogger cannot serve a multi-file app with a service worker, and an iframe would break installing it and working offline.
-
+Keep the app on Netlify and give it its own subdomain, e.g. **jamb.hasbal.com.ng** (Netlify → Domain management → Add domain; at your DNS provider add a `CNAME` for `jamb` pointing to your `*.netlify.app` address).
 ## Updating the question bank
 
 Questions live in `questions.js` as records: `{ id, subject, topic, difficulty, q, opts[4], ans(0-3), explanation, status, origin }`.
@@ -38,21 +37,13 @@ Questions live in `questions.js` as records: `{ id, subject, topic, difficulty, 
 2. Run `node tools/validate-questions.js` — it checks ids, four distinct options, answer index, duplicates, mock-exam capacity and prints coverage per topic.
 3. Commit. Students get the update on their next visit (the service worker is network-first).
 
-**Status honesty:** every question is currently `ai-reviewed`, meaning written/checked by AI but **not yet signed off by a subject teacher**. Change a record to `verified` only after a teacher has checked it. About 340 older questions still have no worked explanation or difficulty grade; the practice page says so rather than hiding it.
+**Status honesty:** every question is initially `ai-reviewed`, meaning written/checked by AI but **not yet signed off by a subject teacher**. Change a record to `verified` only after a teacher has checked it.
 
 ## What is verified vs. pending (as of 20 Oct 2026)
 
 - **Confirmed from reporting:** UTME format (English 60 + three subjects × 40 = 180 questions, 2 hours); 2026/27 national minimums (universities 150, polytechnics/colleges of education 100; nursing 150 per the JAMB bulletin as reported).
 - **Not confirmed by JAMB yet:** 2027 registration dates, syllabus changes and the 2027 English reading text. The mock's reading-text questions use *The Lekki Headmaster* (confirmed through 2026) and say so on screen. Check jamb.gov.ng / IBASS when 2027 details are released.
 - **Scoring:** JAMB publishes no official conversion. The mock reports an *estimated* UTME-style score (each subject scaled to 100 marks, English 60 questions, others 40) and labels it as an estimate.
-
-## SECURITY — do this now
-
-The original paid version of `cbt-exam.html` contained a live **JSONBin master key**, EmailJS identifiers and your OPay details in public page source. Those lived in the old deployment and in your GitHub history (the key is still visible in earlier commits even though this version removes it). Because the JSONBin store held student names, emails and phone numbers:
-
-1. Log in to JSONBin and **revoke/rotate the master key**, then delete the old bin.
-2. In EmailJS, regenerate keys if you still use that account.
-3. If you later add paid access, do not repeat the client-side token scheme: use Paystack/Flutterwave with a Netlify Function that verifies the payment and issues a signed token. Never put secret keys in page code.
 
 ## Deploy it (same flow you already use for Hasbal Global Solutions)
 
