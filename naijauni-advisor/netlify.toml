@@ -38,3 +38,13 @@
   for = "/styles.css"
   [headers.values]
     Cache-Control = "no-cache"
+
+[[headers]]
+  for = "/practice.html"
+  [headers.values]
+    Cache-Control = "no-cache"
+
+[[headers]]
+  for = "/questions.js"
+  [headers.values]
+    Cache-Control = "no-cache"

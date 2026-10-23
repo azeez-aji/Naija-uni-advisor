@@ -7,23 +7,59 @@ with an optional AI deep-dive for current, researched context.
 ## What's in this repo
 
 ```
-index.html                    # app shell
-styles.css                    # design system (ink-teal + gold, Newsreader/Public Sans/IBM Plex Mono)
-data.js                       # course + institution dataset, JAMB 2026/2027 minimums
-app.js                        # wizard, rule engine, rendering, PWA install logic
-manifest.json + sw.js         # PWA install + offline caching
-icons/                        # app icons
-netlify.toml                  # Netlify build config
-netlify/functions/deep-analysis.js   # serverless function powering the AI deep-dive
-cbt-exam.html                  # standalone JAMB CBT practice exam, linked from the app
+index.html, app.js, data.js    # NaijaUni Advisor (admission-chances checker, 400+ institutions)
+styles.css                     # shared design system
+practice.html                  # NEW: subject-by-subject practice centre (topics, explanations, progress)
+cbt-exam.html                  # full 180-question mock exam (exam mode + optional learning mode)
+questions.js                   # NEW: ONE shared question bank used by both practice.html and cbt-exam.html
+tools/validate-questions.js    # NEW: run before every deploy to catch broken questions
+manifest.json + sw.js          # installable PWA, network-first so updates always reach students
+netlify.toml                   # Netlify config + no-cache headers
+netlify/functions/deep-analysis.js   # optional AI deep-dive (needs ANTHROPIC_API_KEY)
 ```
 
-## Deploy it
+## The three parts, and how they connect
+
+1. **Advisor** — course + institution + score → honest verdict, then links to practise exactly the subjects that course needs.
+2. **Practice centre** — one subject at a time; filter by topic and difficulty; Learn mode (instant explanation) or Exam mode; flag questions; retry the ones you missed; progress stored on the student's device.
+3. **Full mock** — 4 subjects, 180 questions, 2 hours. Each paper is sampled from the bank, so no two attempts are identical. Results list the weakest topics and link straight back into the practice centre.
+
+All three read the same `questions.js`, so there is one answer key.
+
+## Hosting recommendation
+
+Keep the app on Netlify and give it its own subdomain, e.g. **jamb.hasbal.com.ng** (Netlify → Domain management → Add domain; at your DNS provider add a `CNAME` for `jamb` pointing to your `*.netlify.app` address). Keep **blog.hasbal.com.ng** for articles that link into the app. Blogger cannot serve a multi-file app with a service worker, and an iframe would break installing it and working offline.
+
+## Updating the question bank
+
+Questions live in `questions.js` as records: `{ id, subject, topic, difficulty, q, opts[4], ans(0-3), explanation, status, origin }`.
+
+1. Append new records to `QUESTION_BANK` using the next free id (e.g. `phy-0064`).
+2. Run `node tools/validate-questions.js` — it checks ids, four distinct options, answer index, duplicates, mock-exam capacity and prints coverage per topic.
+3. Commit. Students get the update on their next visit (the service worker is network-first).
+
+**Status honesty:** every question is currently `ai-reviewed`, meaning written/checked by AI but **not yet signed off by a subject teacher**. Change a record to `verified` only after a teacher has checked it. About 340 older questions still have no worked explanation or difficulty grade; the practice page says so rather than hiding it.
+
+## What is verified vs. pending (as of 20 Oct 2026)
+
+- **Confirmed from reporting:** UTME format (English 60 + three subjects × 40 = 180 questions, 2 hours); 2026/27 national minimums (universities 150, polytechnics/colleges of education 100; nursing 150 per the JAMB bulletin as reported).
+- **Not confirmed by JAMB yet:** 2027 registration dates, syllabus changes and the 2027 English reading text. The mock's reading-text questions use *The Lekki Headmaster* (confirmed through 2026) and say so on screen. Check jamb.gov.ng / IBASS when 2027 details are released.
+- **Scoring:** JAMB publishes no official conversion. The mock reports an *estimated* UTME-style score (each subject scaled to 100 marks, English 60 questions, others 40) and labels it as an estimate.
+
+## SECURITY — do this now
+
+The original paid version of `cbt-exam.html` contained a live **JSONBin master key**, EmailJS identifiers and your OPay details in public page source. Those lived in the old deployment and in your GitHub history (the key is still visible in earlier commits even though this version removes it). Because the JSONBin store held student names, emails and phone numbers:
+
+1. Log in to JSONBin and **revoke/rotate the master key**, then delete the old bin.
+2. In EmailJS, regenerate keys if you still use that account.
+3. If you later add paid access, do not repeat the client-side token scheme: use Paystack/Flutterwave with a Netlify Function that verifies the payment and issues a signed token. Never put secret keys in page code.
+
+## Deploy it (same flow you already use for Hasbal Global Solutions)
 
 1. **Create a new GitHub repo** — e.g. `AbuKhayrAZ/naijauni-advisor`. Upload every
    file in this folder, keeping the folder structure intact (especially
    `netlify/functions/deep-analysis.js` — it must stay in that exact path).
-2. **Connect it in Netlify or any other** — "Add new site" → "Import an existing project" →
+2. **Connect it in Netlify** — "Add new site" → "Import an existing project" →
    pick the new repo. Build settings are already defined in `netlify.toml`, so
    you can leave the build command blank and publish directory as `.`.
 3. **Add your Anthropic API key** — in Netlify: Site settings → Environment
@@ -81,8 +117,7 @@ formulas and cut-offs get revised yearly and the app says so throughout.
 
 ## Institution coverage
 
-104 institutions across federal/state/private universities, polytechnics,
-and colleges of education — up from an initial ~30. Cut-off figures beyond
+402 entries: about 190 universities (federal, state, private), 146 polytechnics, 65 colleges of education, 1 nursing college, plus "Other … (not listed)" catch-alls. Compiled from NUC-, NBTE- and NCCE-based reference lists in Oct 2026. Several federal colleges of education (Zaria, Kano, Alvan Ikoku) have since become federal universities of education and are listed as such. Only a minority of institutions carry institution-specific cut-offs or verified formulas; everything else uses the JAMB national minimum for its type and is clearly marked "estimated". The private-university list is not exhaustive — use "Other private university". Cut-off figures beyond
 each type's JAMB national minimum are publicly reported for oversubscribed
 institutions and were cross-checked against multiple sources during
 research; expect some drift year to year (LAUTECH alone was reported as

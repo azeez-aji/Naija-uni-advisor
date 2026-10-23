@@ -5,7 +5,7 @@
 // to returning visitors, especially on Android where service workers
 // persist more aggressively than on desktop.)
 
-const CACHE_NAME = "naijauni-advisor-v2";
+const CACHE_NAME = "naijauni-advisor-v3";
 const PRECACHE_URLS = [
   "/",
   "/index.html",
@@ -15,7 +15,9 @@ const PRECACHE_URLS = [
   "/manifest.json",
   "/icons/icon-192.png",
   "/icons/icon-512.png",
-  "/cbt-exam.html"
+  "/cbt-exam.html",
+  "/practice.html",
+  "/questions.js"
 ];
 
 self.addEventListener("install", (event) => {

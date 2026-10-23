@@ -49,11 +49,31 @@ function el(tag, attrs = {}, children = []) {
   return node;
 }
 
+function instKind(i) {
+  const t = i.type.replace(/_/g, " ");
+  return i.owner && i.owner !== i.type ? `${i.owner} ${t}` : t;
+}
+function isUniversityType(t) { return t === "federal" || t === "state" || t === "private"; }
+const PRACTICE_IDS = {
+  "English Language": "english", "Mathematics": "mathematics", "Physics": "physics", "Chemistry": "chemistry",
+  "Biology": "biology", "Economics": "economics", "Government": "government", "Accounting/Book-keeping": "accounting"
+};
+function practiceLinksFor(course) {
+  const wanted = ["English Language", ...(course.required || []).filter(s => s !== "English Language"), ...(course.oneOf || [])];
+  const seen = new Set();
+  const links = wanted.filter(s => PRACTICE_IDS[s] && !seen.has(s) && seen.add(s)).slice(0, 6);
+  if (!links.length) return null;
+  return el("div", { class: "practice-block" }, [
+    el("h3", {}, "Practise the subjects this course needs"),
+    el("p", { class: "step-hint" }, "Free topic-by-topic practice with worked explanations."),
+    el("div", { class: "practice-links" }, links.map(s => el("a", { class: "chip-link", href: `practice.html?subject=${PRACTICE_IDS[s]}` }, s)))
+  ]);
+}
 function getCourse(id) { return COURSES.find(c => c.id === id); }
 function getInstitution(id) { return INSTITUTIONS.find(i => i.id === id); }
 
 /* ---------- searchable combobox ---------- */
-function createSearchableSelect({ items, getLabel, getSubLabel, placeholder, initialId, getId, onSelect }) {
+function createSearchableSelect({ items, getLabel, getSubLabel, getSearchText, placeholder, initialId, getId, onSelect }) {
   const wrap = el("div", { class: "combobox" });
   const input = el("input", {
     type: "text", class: "combobox-input", placeholder,
@@ -95,7 +115,7 @@ function createSearchableSelect({ items, getLabel, getSubLabel, placeholder, ini
 
   input.addEventListener("input", () => {
     const q = input.value.trim().toLowerCase();
-    filtered = q === "" ? items.slice() : items.filter(it => getLabel(it).toLowerCase().includes(q));
+    filtered = q === "" ? items.slice() : items.filter(it => (getSearchText ? getSearchText(it) : getLabel(it)).toLowerCase().includes(q));
     activeIndex = -1;
     renderList();
     if (q === "") onSelect(null);
@@ -265,8 +285,9 @@ function buildAlternatives({ course, inst, score, olevelPct, subjectCombinationM
     return rw.jamb * jambPct + rw.olevel * olevelPct;
   }
 
+  const sameLevel = i => isUniversityType(inst.type) ? isUniversityType(i.type) : i.type === inst.type;
   const cheaperInstitutions = INSTITUTIONS
-    .filter(i => i.id !== inst.id && i.minCutoff != null)
+    .filter(i => i.id !== inst.id && i.minCutoff != null && i.owner === undefined && sameLevel(i))
     .map(i => ({ inst: i, agg: Math.round(noPostUtmeAggregate(i) * 10) / 10, thresh: tierThreshold(course.tier, i.prestige) }))
     .filter(x => x.agg >= x.thresh)
     .sort((a, b) => (b.agg - b.thresh) - (a.agg - a.thresh));
@@ -387,7 +408,8 @@ function renderLanding() {
     renderCutoffBar(0, 200, "demo"),
     el("div", { class: "hero-actions" }, [
       el("button", { class: "btn btn-primary btn-lg", onclick: startWizard }, "Check my chances →"),
-      el("a", { class: "btn btn-ghost btn-lg", href: "cbt-exam.html", target: "_blank", rel: "noopener" }, "Take a CBT practice exam")
+      el("a", { class: "btn btn-ghost btn-lg", href: "practice.html" }, "Practise by subject"),
+      el("a", { class: "btn btn-ghost btn-lg", href: "cbt-exam.html" }, "Full mock exam")
     ])
   ]);
 
@@ -454,6 +476,7 @@ function renderAggregateBreakdown(r) {
     ? "This weighting matches a formula publicly published by this institution."
     : "This institution hasn't published a specific formula we could verify — this uses the common general pattern instead. Confirm on their admissions portal.";
   wrap.appendChild(el("p", { class: "step-hint" }, confidenceNote));
+  if (r.inst.formulaNote) wrap.appendChild(el("p", { class: "step-hint" }, "Note: " + r.inst.formulaNote));
 
   const rows = [
     { label: "JAMB score", pct: r.jambPct, weight: Math.round(r.weights.jamb * 100) },
@@ -697,7 +720,7 @@ function stepCourse() {
 function stepInstitution() {
   const body = el("div", { class: "step-body" }, [
     el("h2", {}, "Which institution?"),
-    el("p", { class: "step-hint" }, "Search by name — pick \"Other…\" at the bottom of the list if yours isn't shown.")
+    el("p", { class: "step-hint" }, "Search by name, abbreviation or state (e.g. LAUTECH, Oyo, polytechnic). Pick \"Other…\" at the bottom if yours isn't listed.")
   ]);
   const err = el("p", { class: "field-error" });
   const combo = createSearchableSelect({
@@ -706,7 +729,8 @@ function stepInstitution() {
       return a.name.localeCompare(b.name);
     }),
     getLabel: i => i.name,
-    getSubLabel: i => `${i.type.replace(/_/g, " ")}${i.state !== "—" ? " · " + i.state : ""}`,
+    getSubLabel: i => `${instKind(i)}${i.state !== "—" ? " · " + i.state : ""}`,
+    getSearchText: i => `${i.name} ${i.state} ${instKind(i)}`,
     getId: i => i.id,
     initialId: state.institutionId,
     placeholder: "Search for a university, polytechnic…",
@@ -796,7 +820,8 @@ function renderResults() {
   const planCard = el("div", { class: "card" }, [
     el("h2", {}, "Your next steps"),
     el("ol", { class: "action-plan" }, ACTION_PLANS[r.band].map(step => el("li", {}, step))),
-    el("a", { class: "btn btn-ghost cbt-link", href: "cbt-exam.html", target: "_blank", rel: "noopener" }, "Sharpen your score with a CBT practice exam →")
+    practiceLinksFor(r.course),
+    el("a", { class: "btn btn-ghost cbt-link", href: "cbt-exam.html" }, "Test yourself with a full CBT mock exam →")
   ]);
   container.appendChild(planCard);
 
