@@ -1,0 +1,381 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Subject Practice — NaijaUni Advisor</title>
+<meta name="description" content="Free JAMB UTME practice by subject and topic, with worked explanations and progress tracking.">
+<meta name="theme-color" content="#0B2B29">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,500;0,600;0,700;1,500;1,600&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+<style>
+  .nav-links { display:flex; gap:14px; font-size:.88rem; }
+  .nav-links a { color: var(--ink-muted); text-decoration:none; }
+  .nav-links a:hover { color: var(--ink-900); }
+  .lead { color: var(--ink-muted); max-width: 56ch; }
+  .subj-grid { display:grid; grid-template-columns: repeat(2, 1fr); gap:12px; }
+  .subj { text-align:left; background:#fff; border:1.5px solid var(--line); border-radius:var(--radius); padding:16px; cursor:pointer; font:inherit; transition: border-color .15s, transform .15s; display:flex; flex-direction:column; gap:6px; }
+  .subj:hover { border-color: var(--teal-600); transform: translateY(-1px); }
+  .subj-name { font-family:"Newsreader",serif; font-size:1.15rem; font-weight:600; color:var(--ink-900); }
+  .subj-meta { font-size:.8rem; color:var(--ink-muted); }
+  .mini-bar { height:6px; border-radius:99px; background:var(--paper-100); overflow:hidden; border:1px solid var(--line); }
+  .mini-fill { height:100%; background:linear-gradient(90deg,var(--teal-500),var(--gold-500)); }
+  .row { display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
+  .field { display:flex; flex-direction:column; gap:6px; margin-bottom:16px; }
+  .field > label, .field > .lbl { font-size:.78rem; text-transform:uppercase; letter-spacing:.05em; color:var(--ink-muted); font-weight:600; }
+  select.sel { font:inherit; padding:11px 12px; border:1.5px solid var(--line); border-radius:var(--radius-sm); background:var(--paper-50); width:100%; }
+  .chips { display:flex; gap:8px; flex-wrap:wrap; }
+  .chip { font:inherit; font-size:.9rem; padding:8px 16px; border-radius:99px; border:1.5px solid var(--line); background:#fff; cursor:pointer; }
+  .chip.on { background:var(--ink-900); color:#fff; border-color:var(--ink-900); }
+  .check { display:flex; gap:10px; align-items:flex-start; font-size:.92rem; margin-bottom:10px; cursor:pointer; }
+  .check input { margin-top:4px; width:18px; height:18px; accent-color: var(--teal-600); }
+  .note { background:var(--paper-50); border:1px solid var(--line); border-left:3px solid var(--gold-500); border-radius:var(--radius-sm); padding:12px 14px; font-size:.86rem; color:var(--ink-muted); margin:12px 0; }
+  .q-top { display:flex; justify-content:space-between; align-items:center; gap:10px; font-size:.84rem; color:var(--ink-muted); margin-bottom:8px; }
+  .q-tag { font-size:.72rem; background:var(--paper-100); border:1px solid var(--line); border-radius:99px; padding:3px 10px; margin-right:6px; }
+  .q-text { font-size:1.08rem; line-height:1.6; margin:12px 0 16px; color:var(--ink-text); }
+  .opts { display:flex; flex-direction:column; gap:10px; }
+  .opt { display:flex; gap:12px; align-items:flex-start; text-align:left; width:100%; font:inherit; background:#fff; border:1.5px solid var(--line); border-radius:var(--radius-sm); padding:13px 14px; cursor:pointer; line-height:1.45; }
+  .opt:hover:not(:disabled) { border-color:var(--teal-600); }
+  .opt .L { flex:0 0 28px; height:28px; border-radius:50%; background:var(--paper-100); display:flex; align-items:center; justify-content:center; font-weight:700; font-size:.82rem; }
+  .opt.sel { border-color:var(--gold-500); background:#FFF9EC; }
+  .opt.sel .L { background:var(--gold-500); }
+  .opt.ok { border-color:var(--strong); background:#EAF6EF; }
+  .opt.ok .L { background:var(--strong); color:#fff; }
+  .opt.bad { border-color:var(--low); background:#FBECE8; }
+  .opt.bad .L { background:var(--low); color:#fff; }
+  .opt:disabled { cursor:default; }
+  .expl-box { margin-top:14px; padding:14px; border-radius:var(--radius-sm); background:#F1F7F6; border:1px solid var(--line); font-size:.94rem; line-height:1.6; }
+  .expl-box.bad { background:#FDF3F0; }
+  .passage { background:var(--paper-50); border:1px solid var(--line); border-radius:var(--radius-sm); padding:12px 14px; margin-bottom:12px; font-size:.92rem; line-height:1.65; }
+  .passage summary { cursor:pointer; font-weight:600; color:var(--ink-900); }
+  .passage-text { margin-top:10px; white-space:pre-line; }
+  .nav-row { display:flex; justify-content:space-between; gap:10px; margin-top:18px; flex-wrap:wrap; }
+  .flag { background:none; border:1px solid var(--line); border-radius:99px; padding:5px 12px; font:inherit; font-size:.8rem; cursor:pointer; }
+  .flag.on { background:#FFF4D6; border-color:var(--gold-500); }
+  .big-score { font-family:"Newsreader",serif; font-size:3rem; font-weight:600; color:var(--ink-900); line-height:1; }
+  .topic-row { margin:12px 0; }
+  .topic-row-top { display:flex; justify-content:space-between; font-size:.9rem; gap:10px; }
+  .rev-item { border:1px solid var(--line); border-radius:var(--radius-sm); padding:14px; margin-bottom:12px; background:#fff; }
+  .rev-item.miss { border-left:4px solid var(--low); }
+  .rev-item.hit { border-left:4px solid var(--strong); }
+  .tiny-btn { font:inherit; font-size:.76rem; color:var(--ink-muted); background:none; border:none; text-decoration:underline; cursor:pointer; padding:0; }
+  .toast { position:fixed; left:50%; bottom:24px; transform:translateX(-50%); background:var(--ink-900); color:#fff; padding:10px 18px; border-radius:99px; font-size:.86rem; z-index:50; max-width:90vw; }
+  .timer { font-family:"IBM Plex Mono",monospace; font-weight:600; color:var(--ink-900); }
+  .timer.low { color:var(--very-low); }
+  @media (min-width: 640px) { .subj-grid { grid-template-columns: repeat(3, 1fr); } }
+  @media print { .nav-links, .nav-row { display:none; } }
+</style>
+</head>
+<body>
+<div class="topbar">
+  <a href="index.html" class="brand">
+    <span class="brand-mark"><svg viewBox="0 0 16 16" fill="none"><path d="M2 11L6 8L9 10L14 4" stroke="#E3A23C" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M2 13.5H14" stroke="#F6F8F7" stroke-width="1.6" stroke-linecap="round"/></svg></span>
+    NaijaUni Advisor
+  </a>
+  <nav class="nav-links"><a href="index.html">Advisor</a><a href="cbt-exam.html">Full mock exam</a></nav>
+</div>
+<main id="px"></main>
+
+<script src="questions.js"></script>
+<script>
+(function () {
+  "use strict";
+  var SUBJECTS = {
+    english:     { label: "Use of English", icon: "📖", blurb: "Lexis, structure, oral English, comprehension, reading text" },
+    mathematics: { label: "Mathematics",    icon: "➗", blurb: "Algebra, geometry, calculus, statistics" },
+    physics:     { label: "Physics",        icon: "⚡", blurb: "Mechanics, waves, optics, electricity, modern physics" },
+    chemistry:   { label: "Chemistry",      icon: "⚗️", blurb: "Stoichiometry, bonding, organic, electrochemistry" },
+    biology:     { label: "Biology",        icon: "🧬", blurb: "Cells, physiology, genetics, ecology" },
+    economics:   { label: "Economics",      icon: "📈", blurb: "Demand and supply, macroeconomics, money, trade" },
+    government:  { label: "Government",     icon: "🏛️", blurb: "Principles, institutions, Nigerian government" },
+    accounting:  { label: "Accounting",     icon: "🧾", blurb: "Double entry, final accounts, ratios" }
+  };
+  var LS = "hsb_practice_v1";
+  var LETTERS = ["A", "B", "C", "D"];
+  var app = document.getElementById("px");
+
+  var store = loadStore();
+  var S = { view: "home", subject: null, cfg: null, list: [], idx: 0, answers: [], revealed: [], deadline: 0, timer: null, startedAt: 0, reviewFilter: "all" };
+
+  /* ---------- helpers ---------- */
+  function esc(t) { return String(t == null ? "" : t).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;"); }
+  function shuffle(a) { a = a.slice(); for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)); var t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
+  function loadStore() { try { var s = JSON.parse(localStorage.getItem(LS)); if (s && s.stats) return s; } catch (e) {} return { stats: {}, flags: [], history: [] }; }
+  function saveStore() { try { localStorage.setItem(LS, JSON.stringify(store)); } catch (e) {} }
+  function byId(id) { for (var i = 0; i < QUESTION_BANK.length; i++) if (QUESTION_BANK[i].id === id) return QUESTION_BANK[i]; return null; }
+  function subjectQs(s) { return QUESTION_BANK.filter(function (q) { return q.subject === s; }); }
+  function topicsOf(s) { var m = {}; subjectQs(s).forEach(function (q) { m[q.topic] = (m[q.topic] || 0) + 1; }); return m; }
+  function accuracy(s) { var a = 0, c = 0, t = store.stats[s] || {}; Object.keys(t).forEach(function (k) { a += t[k].a; c += t[k].c; }); return { a: a, c: c, pct: a ? Math.round(c / a * 100) : null }; }
+  function toast(msg) { var d = document.createElement("div"); d.className = "toast"; d.textContent = msg; document.body.appendChild(d); setTimeout(function () { d.remove(); }, 2600); }
+  function isFlagged(id) { return store.flags.indexOf(id) !== -1; }
+
+  /* ---------- views ---------- */
+  function render() {
+    clearInterval(S.timer);
+    if (S.view === "home") home();
+    else if (S.view === "setup") setup();
+    else if (S.view === "run") run();
+    else if (S.view === "result") result();
+    else if (S.view === "review") review();
+    window.scrollTo(0, 0);
+  }
+
+  function home() {
+    var total = 0, correct = 0;
+    Object.keys(store.stats).forEach(function (s) { var r = accuracy(s); total += r.a; correct += r.c; });
+    var cards = Object.keys(SUBJECTS).map(function (s) {
+      var info = SUBJECTS[s], n = subjectQs(s).length, acc = accuracy(s);
+      return '<button class="subj" data-act="pick" data-s="' + s + '">' +
+        '<span style="font-size:1.5rem">' + info.icon + '</span>' +
+        '<span class="subj-name">' + info.label + '</span>' +
+        '<span class="subj-meta">' + n + ' questions · ' + Object.keys(topicsOf(s)).length + ' topics</span>' +
+        '<div class="mini-bar"><div class="mini-fill" style="width:' + (acc.pct || 0) + '%"></div></div>' +
+        '<span class="subj-meta">' + (acc.a ? 'Your accuracy: ' + acc.pct + '% (' + acc.a + ' answered)' : 'Not started') + '</span></button>';
+    }).join("");
+    var flagged = store.flags.filter(byId).length;
+    app.innerHTML =
+      '<div class="screen">' +
+      '<div><p class="eyebrow">SUBJECT PRACTICE</p><h1>Practise one subject at a time.</h1>' +
+      '<p class="lead">Pick a subject, choose a topic, and get instant feedback with worked explanations. Use it before or after the full mock exam to fix weak areas.</p></div>' +
+      (total ? '<div class="card"><div class="row" style="justify-content:space-between"><div><div class="subj-meta">Overall accuracy on this device</div><div class="big-score">' + Math.round(correct / total * 100) + '%</div></div><div class="subj-meta">' + total + ' questions answered</div></div></div>' : '') +
+      '<div class="subj-grid">' + cards + '</div>' +
+      (flagged ? '<button class="btn btn-ghost" data-act="flagged">🚩 Practise my flagged questions (' + flagged + ')</button>' : '') +
+      '<div class="card"><h3>Ready for the real thing?</h3><p class="step-hint" style="margin-bottom:12px">The full mock follows the real format: 4 subjects, 180 questions, 2 hours.</p><a class="btn btn-primary" href="cbt-exam.html" style="text-decoration:none;display:inline-block">Take the full mock exam →</a></div>' +
+      '<p class="landing-disclaimer">Questions are independently written for practice and have been AI-reviewed; they have not yet been signed off by a subject teacher. Spot a mistake? Tap “Report” on the question and send the text to your tutor. Progress is saved on this device only. ' +
+      '<button class="tiny-btn" data-act="clear">Clear my saved progress</button></p>' +
+      '</div>';
+  }
+
+  function setup() {
+    var s = S.subject, info = SUBJECTS[s], topics = topicsOf(s), c = S.cfg;
+    var qs = subjectQs(s);
+    var diffCount = { easy: 0, moderate: 0, hard: 0 };
+    qs.forEach(function (q) { if (q.difficulty) diffCount[q.difficulty]++; });
+    var topicOpts = '<option value="all">All topics (' + qs.length + ')</option>' + Object.keys(topics).sort().map(function (t) {
+      return '<option value="' + esc(t) + '"' + (c.topic === t ? " selected" : "") + '>' + esc(t) + ' (' + topics[t] + ')</option>';
+    }).join("");
+    function diffOpt(v, l) { return '<option value="' + v + '"' + (c.difficulty === v ? " selected" : "") + '>' + l + '</option>'; }
+    var avail = pool().length;
+    var counts = [10, 20, 40, "all"].map(function (n) {
+      return '<button class="chip' + (String(c.count) === String(n) ? " on" : "") + '" data-act="count" data-n="' + n + '">' + (n === "all" ? "All (" + avail + ")" : n) + '</button>';
+    }).join("");
+    var novel = (c.topic === "Lekki Headmaster") ? '<div class="note">These questions are based on <em>The Lekki Headmaster</em>, JAMB’s reading text through the 2026 UTME. JAMB has not yet confirmed the 2027 text — check jamb.gov.ng when registration opens.</div>' : "";
+    app.innerHTML =
+      '<div class="screen"><button class="tiny-btn" data-act="home">← All subjects</button>' +
+      '<div><p class="eyebrow">' + info.icon + ' ' + info.label.toUpperCase() + '</p><h1>Set up your practice</h1><p class="lead">' + info.blurb + '.</p></div>' +
+      '<div class="card">' +
+      '<div class="field"><label for="f-topic">Topic</label><select class="sel" id="f-topic" data-field="topic">' + topicOpts + '</select></div>' +
+      '<div class="field"><label for="f-diff">Difficulty</label><select class="sel" id="f-diff" data-field="difficulty">' +
+        diffOpt("any", "Any difficulty") + diffOpt("easy", "Easy (" + diffCount.easy + ")") + diffOpt("moderate", "Moderate (" + diffCount.moderate + ")") + diffOpt("hard", "Hard (" + diffCount.hard + ")") +
+      '</select></div>' +
+      '<div class="field"><span class="lbl">Number of questions</span><div class="chips">' + counts + '</div></div>' +
+      '<div class="field"><span class="lbl">Mode</span>' +
+        '<label class="check"><input type="radio" name="mode" value="learn" data-field="mode"' + (c.mode === "learn" ? " checked" : "") + '><span><strong>Learn</strong> — see the answer and explanation after each question</span></label>' +
+        '<label class="check"><input type="radio" name="mode" value="exam" data-field="mode"' + (c.mode === "exam" ? " checked" : "") + '><span><strong>Exam</strong> — answers revealed only at the end</span></label></div>' +
+      '<label class="check"><input type="checkbox" data-field="timed"' + (c.timed ? " checked" : "") + '><span>Timed at JAMB pace (40 seconds per question)</span></label>' +
+      novel +
+      (avail === 0 ? '<div class="note">No questions match these filters. Try a different difficulty — older questions are not graded for difficulty yet.</div>' : "") +
+      '<button class="btn btn-primary btn-lg" data-act="start"' + (avail === 0 ? " disabled" : "") + ' style="width:100%;margin-top:8px">Start practice →</button>' +
+      '</div></div>';
+  }
+
+  function pool() {
+    var c = S.cfg;
+    return subjectQs(S.subject).filter(function (q) {
+      return (c.topic === "all" || q.topic === c.topic) && (c.difficulty === "any" || q.difficulty === c.difficulty);
+    });
+  }
+
+  function startSession(list) {
+    S.list = list; S.idx = 0; S.answers = list.map(function () { return null; }); S.revealed = list.map(function () { return false; });
+    S.startedAt = Date.now(); S.view = "run";
+    S.deadline = S.cfg.timed ? Date.now() + list.length * 40000 : 0;
+    render();
+  }
+
+  function run() {
+    clearInterval(S.timer);
+    var q = S.list[S.idx], n = S.list.length, cfg = S.cfg, ans = S.answers[S.idx], rev = S.revealed[S.idx];
+    var info = SUBJECTS[q.subject];
+    var passage = "";
+    if (q.passage && PASSAGES[q.passage]) {
+      var p = PASSAGES[q.passage];
+      passage = '<details class="passage" open><summary>' + esc(p.label || "Passage") + ' — ' + esc(p.title || "") + '</summary><div class="passage-text">' + p.text + '</div></details>';
+    }
+    var opts = q.opts.map(function (o, i) {
+      var cls = "opt", dis = "";
+      if (rev) { dis = " disabled"; if (i === q.ans) cls += " ok"; else if (i === ans) cls += " bad"; }
+      else if (ans === i) cls += " sel";
+      return '<button class="' + cls + '" data-act="ans" data-i="' + i + '"' + dis + '><span class="L">' + LETTERS[i] + '</span><span>' + esc(o) + '</span></button>';
+    }).join("");
+    var fb = "";
+    if (rev) {
+      var good = ans === q.ans;
+      fb = '<div class="expl-box' + (good ? "" : " bad") + '" role="status" aria-live="polite"><strong>' + (good ? "✓ Correct." : "✗ Not quite.") + '</strong> The answer is ' + LETTERS[q.ans] + '. ' +
+        (q.explanation ? esc(q.explanation) : '<em>A worked explanation for this question is still being written.</em>') + '</div>';
+    }
+    var last = S.idx === n - 1;
+    app.innerHTML =
+      '<div class="screen">' +
+      '<div class="q-top"><span>Question ' + (S.idx + 1) + ' of ' + n + '</span>' +
+        (S.deadline ? '<span class="timer" id="tm">--:--</span>' : '') +
+        '<button class="flag' + (isFlagged(q.id) ? " on" : "") + '" data-act="flag">' + (isFlagged(q.id) ? "🚩 Flagged" : "⚑ Flag") + '</button></div>' +
+      '<div class="progress-bar"><div class="progress-fill" style="width:' + Math.round((S.idx + 1) / n * 100) + '%"></div></div>' +
+      '<div class="card">' +
+      '<div><span class="q-tag">' + info.icon + ' ' + info.label + '</span><span class="q-tag">' + esc(q.topic) + '</span>' + (q.difficulty ? '<span class="q-tag">' + q.difficulty + '</span>' : "") + '</div>' +
+      passage + '<div class="q-text">' + esc(q.q) + '</div>' +
+      '<div class="opts">' + opts + '</div>' + fb +
+      '<div class="nav-row"><button class="btn btn-ghost" data-act="prev"' + (S.idx === 0 ? " disabled" : "") + '>← Previous</button>' +
+      (last ? '<button class="btn btn-primary" data-act="finish">Finish &amp; see results</button>' : '<button class="btn btn-primary" data-act="next">Next →</button>') + '</div>' +
+      '<p style="margin:14px 0 0"><button class="tiny-btn" data-act="report">Report a problem with this question</button> <span class="subj-meta">· ID ' + q.id + '</span></p>' +
+      '</div></div>';
+    if (S.deadline) { tick(); S.timer = setInterval(tick, 1000); }
+  }
+
+  function tick() {
+    var left = Math.max(0, Math.ceil((S.deadline - Date.now()) / 1000));
+    var el = document.getElementById("tm");
+    if (el) { el.textContent = Math.floor(left / 60) + ":" + String(left % 60).padStart(2, "0"); el.className = "timer" + (left <= 60 ? " low" : ""); }
+    if (left <= 0) { clearInterval(S.timer); finish(); }
+  }
+
+  function finish() {
+    clearInterval(S.timer);
+    var correct = 0, answered = 0, perTopic = {};
+    S.list.forEach(function (q, i) {
+      var a = S.answers[i];
+      var t = perTopic[q.subject + "||" + q.topic] = perTopic[q.subject + "||" + q.topic] || { s: q.subject, t: q.topic, a: 0, c: 0, total: 0 };
+      t.total++;
+      if (a !== null) {
+        answered++; t.a++;
+        if (a === q.ans) { correct++; t.c++; }
+        var st = store.stats[q.subject] = store.stats[q.subject] || {};
+        var tt = st[q.topic] = st[q.topic] || { a: 0, c: 0 };
+        tt.a++; if (a === q.ans) tt.c++;
+      }
+    });
+    store.history.push({ ts: Date.now(), subject: S.subject || "mixed", n: S.list.length, c: correct });
+    store.history = store.history.slice(-50);
+    saveStore();
+    S.result = { correct: correct, answered: answered, total: S.list.length, perTopic: Object.keys(perTopic).map(function (k) { return perTopic[k]; }), secs: Math.round((Date.now() - S.startedAt) / 1000) };
+    S.view = "result"; render();
+  }
+
+  function result() {
+    var r = S.result, pct = Math.round(r.correct / r.total * 100);
+    var missed = S.list.filter(function (q, i) { return S.answers[i] !== q.ans; }).length;
+    var msg = pct >= 70 ? "Strong work — keep stretching with harder questions." : pct >= 50 ? "Decent. Review the questions you missed, then try this topic again." : "This topic needs more work. Read the explanations, then retry the missed questions.";
+    var rows = r.perTopic.sort(function (a, b) { return (a.c / a.total) - (b.c / b.total); }).map(function (t) {
+      var p = Math.round(t.c / t.total * 100);
+      return '<div class="topic-row"><div class="topic-row-top"><span>' + esc(t.t) + '</span><span class="mono">' + t.c + '/' + t.total + ' · ' + p + '%</span></div><div class="mini-bar"><div class="mini-fill" style="width:' + p + '%"></div></div></div>';
+    }).join("");
+    app.innerHTML =
+      '<div class="screen"><div class="card" style="text-align:center"><p class="eyebrow">SESSION COMPLETE</p><div class="big-score">' + r.correct + ' / ' + r.total + '</div>' +
+      '<p style="margin:8px 0 4px"><strong>' + pct + '%</strong> · ' + Math.floor(r.secs / 60) + 'm ' + (r.secs % 60) + 's' + (r.answered < r.total ? ' · ' + (r.total - r.answered) + ' unanswered' : '') + '</p><p class="step-hint">' + msg + '</p></div>' +
+      '<div class="card"><h3>Performance by topic</h3>' + rows + '</div>' +
+      '<div class="row">' +
+      '<button class="btn btn-primary" data-act="review">Review answers</button>' +
+      (missed ? '<button class="btn btn-ghost" data-act="retry">Retry the ' + missed + ' missed</button>' : '') +
+      '<button class="btn btn-ghost" data-act="again">New session</button>' +
+      '<button class="btn btn-ghost" data-act="home">All subjects</button></div>' +
+      '<p class="landing-disclaimer">These are practice marks, not JAMB scores. Try the <a href="cbt-exam.html">full mock exam</a> when you are ready to practise under timed conditions.</p></div>';
+  }
+
+  function review() {
+    var f = S.reviewFilter;
+    var items = S.list.map(function (q, i) { return { q: q, a: S.answers[i] }; }).filter(function (x) { return f === "all" || x.a !== x.q.ans; });
+    var html = items.map(function (x) {
+      var q = x.q, hit = x.a === q.ans;
+      return '<div class="rev-item ' + (hit ? "hit" : "miss") + '"><div><span class="q-tag">' + esc(q.topic) + '</span><span class="q-tag">' + q.id + '</span></div>' +
+        '<div class="q-text" style="font-size:1rem">' + esc(q.q) + '</div>' +
+        '<div>' + (x.a === null ? '<em>Not answered</em>' : 'Your answer: <strong>' + LETTERS[x.a] + '. ' + esc(q.opts[x.a]) + '</strong>') + '</div>' +
+        '<div>Correct answer: <strong>' + LETTERS[q.ans] + '. ' + esc(q.opts[q.ans]) + '</strong></div>' +
+        '<div class="expl-box">' + (q.explanation ? esc(q.explanation) : '<em>A worked explanation for this question is still being written.</em>') + '</div></div>';
+    }).join("") || '<p class="step-hint">Nothing to show here.</p>';
+    app.innerHTML = '<div class="screen"><button class="tiny-btn" data-act="toresult">← Back to results</button><h2>Review</h2>' +
+      '<div class="chips"><button class="chip' + (f === "all" ? " on" : "") + '" data-act="rfilter" data-f="all">All (' + S.list.length + ')</button>' +
+      '<button class="chip' + (f === "missed" ? " on" : "") + '" data-act="rfilter" data-f="missed">Missed</button></div>' + html + '</div>';
+  }
+
+  /* ---------- events ---------- */
+  document.addEventListener("change", function (e) {
+    var f = e.target.getAttribute && e.target.getAttribute("data-field");
+    if (!f || !S.cfg) return;
+    if (f === "timed") S.cfg.timed = e.target.checked;
+    else if (f === "mode") S.cfg.mode = e.target.value;
+    else S.cfg[f] = e.target.value;
+    if (f === "topic" || f === "difficulty") render();
+  });
+
+  document.addEventListener("click", function (e) {
+    var b = e.target.closest ? e.target.closest("[data-act]") : null;
+    if (!b || b.disabled) return;
+    var act = b.getAttribute("data-act");
+    if (act === "pick") { S.subject = b.getAttribute("data-s"); S.cfg = { topic: "all", difficulty: "any", count: 20, mode: "learn", timed: false }; S.view = "setup"; render(); }
+    else if (act === "home") { S.view = "home"; render(); }
+    else if (act === "count") { var n = b.getAttribute("data-n"); S.cfg.count = n === "all" ? "all" : parseInt(n, 10); setup(); }
+    else if (act === "start") { var p = shuffle(pool()); if (S.cfg.count !== "all") p = p.slice(0, S.cfg.count); startSession(p); }
+    else if (act === "again") { S.view = S.subject ? "setup" : "home"; render(); }
+    else if (act === "ans") {
+      var i = parseInt(b.getAttribute("data-i"), 10), q = S.list[S.idx];
+      if (S.cfg.mode === "learn") { if (S.revealed[S.idx]) return; S.answers[S.idx] = i; S.revealed[S.idx] = true; }
+      else S.answers[S.idx] = i;
+      var y = window.scrollY; run(); window.scrollTo(0, y);
+    }
+    else if (act === "next") { if (S.idx < S.list.length - 1) { S.idx++; render(); } }
+    else if (act === "prev") { if (S.idx > 0) { S.idx--; render(); } }
+    else if (act === "finish") {
+      var un = S.answers.filter(function (a) { return a === null; }).length;
+      if (un && !confirm(un + " question" + (un > 1 ? "s are" : " is") + " unanswered. Finish anyway?")) return;
+      finish();
+    }
+    else if (act === "flag") { var id = S.list[S.idx].id, k = store.flags.indexOf(id); if (k === -1) store.flags.push(id); else store.flags.splice(k, 1); saveStore(); var yy = window.scrollY; run(); window.scrollTo(0, yy); }
+    else if (act === "flagged") {
+      var fl = store.flags.map(byId).filter(Boolean);
+      if (!fl.length) return;
+      S.subject = null; S.cfg = { topic: "all", difficulty: "any", count: "all", mode: "learn", timed: false };
+      startSession(shuffle(fl));
+    }
+    else if (act === "review") { S.reviewFilter = "all"; S.view = "review"; render(); }
+    else if (act === "toresult") { S.view = "result"; render(); }
+    else if (act === "rfilter") { S.reviewFilter = b.getAttribute("data-f"); review(); }
+    else if (act === "retry") {
+      var missedQs = S.list.filter(function (q, i) { return S.answers[i] !== q.ans; });
+      startSession(shuffle(missedQs));
+    }
+    else if (act === "report") {
+      var qq = S.list[S.idx];
+      var text = "Problem with question " + qq.id + " (" + qq.subject + " / " + qq.topic + "): \"" + qq.q.slice(0, 140) + "\" — what is wrong: ";
+      if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(function () { toast("Copied. Paste it to your tutor and say what is wrong."); }, function () { prompt("Copy this and send it to your tutor:", text); });
+      else prompt("Copy this and send it to your tutor:", text);
+    }
+    else if (act === "clear") { if (confirm("Delete your saved practice progress and flags on this device?")) { store = { stats: {}, flags: [], history: [] }; saveStore(); render(); } }
+  });
+
+  document.addEventListener("keydown", function (e) {
+    if (S.view !== "run" || e.target.tagName === "SELECT" || e.metaKey || e.ctrlKey) return;
+    var k = e.key.toLowerCase(), idx = ["a", "b", "c", "d", "1", "2", "3", "4"].indexOf(k);
+    if (idx !== -1) { var btn = document.querySelector('[data-act="ans"][data-i="' + (idx % 4) + '"]'); if (btn) btn.click(); }
+    else if (e.key === "ArrowRight") { var nx = document.querySelector('[data-act="next"]'); if (nx) nx.click(); }
+    else if (e.key === "ArrowLeft") { var pv = document.querySelector('[data-act="prev"]'); if (pv) pv.click(); }
+  });
+
+  /* ---------- deep link: practice.html?subject=physics&topic=Optics ---------- */
+  var qp = new URLSearchParams(location.search), qs0 = qp.get("subject"), qt = qp.get("topic");
+  if (qs0 && SUBJECTS[qs0]) {
+    S.subject = qs0; S.cfg = { topic: "all", difficulty: "any", count: 20, mode: "learn", timed: false };
+    if (qt && topicsOf(qs0)[qt]) S.cfg.topic = qt;
+    S.view = "setup";
+  }
+  render();
+
+  if ("serviceWorker" in navigator) window.addEventListener("load", function () { navigator.serviceWorker.register("./sw.js").catch(function () {}); });
+})();
+</script>
+</body>
+</html>

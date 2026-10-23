@@ -1,0 +1,1291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JAMB UTME 2027 Mock Exam — Hasbal Tutorial Centre (Free)</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--green:#00c853;--red:#ff1744;--navy:#0a0f2e;--navy-mid:#111736;--navy-light:#1a2045;--gold:#ffd600;--white:#f0f2ff;--muted:#8892b0;--border:rgba(255,255,255,0.08);--card:rgba(255,255,255,0.04);--radius:14px;--shadow:0 8px 32px rgba(0,0,0,0.4);--eng:#64b5f6;--chem:#00c853;--bio:#ff9800;--phy:#ce93d8;--math:#ff8f00;--econ:#26c6da;--govt:#ab47bc;--acct:#66bb6a}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--navy);color:var(--white);font-family:'DM Sans',sans-serif;min-height:100vh;overflow-x:hidden}
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(0,200,83,0.04) 1px,transparent 1px),linear-gradient(90deg,rgba(0,200,83,0.04) 1px,transparent 1px);background-size:40px 40px;pointer-events:none;z-index:0}
+
+/* MARQUEE */
+.marquee-banner{position:sticky;top:0;z-index:200;background:linear-gradient(90deg,#00c853,#009624 40%,#ffd600 70%,#00c853);background-size:200% 100%;animation:gradientShift 4s linear infinite;padding:9px 0;overflow:hidden;white-space:nowrap;border-bottom:2px solid rgba(0,0,0,0.2);box-shadow:0 2px 16px rgba(0,200,83,0.4)}
+@keyframes gradientShift{0%{background-position:0%}100%{background-position:200%}}
+.marquee-track{display:inline-flex;animation:marqueeScroll 28s linear infinite}
+.marquee-track:hover{animation-play-state:paused}
+@keyframes marqueeScroll{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+.marquee-segment{display:inline-flex;align-items:center}
+.marquee-text{font-family:'Space Mono',monospace;font-size:0.78rem;font-weight:700;color:#0a0f2e;letter-spacing:0.12em;text-transform:uppercase;padding:0 28px}
+.marquee-text.brand{font-size:0.82rem;letter-spacing:0.18em}
+.marquee-sep{color:rgba(10,15,46,0.45);font-size:1rem;padding:0 4px;user-select:none}
+
+/* GATE OVERLAY */
+#gate-overlay{position:fixed;inset:0;background:var(--navy);z-index:1000;display:flex;flex-direction:column;overflow-y:auto}
+.gate-inner{flex:1;display:flex;align-items:flex-start;justify-content:center;padding:32px 16px 60px}
+.gate-card{background:var(--navy-mid);border:1px solid var(--border);border-radius:24px;padding:36px 32px;width:100%;max-width:480px;animation:fadeUp 0.5s ease both}
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.gate-logo{display:flex;flex-direction:column;align-items:center;margin-bottom:24px}
+.gate-logo-mark{font-size:2.5rem;margin-bottom:8px}
+.gate-brand{font-family:'Space Mono',monospace;font-size:0.7rem;color:var(--green);letter-spacing:0.18em;text-transform:uppercase}
+.gate-tagline{font-size:0.75rem;color:var(--muted);margin-top:2px}
+.gate-title{font-size:1.4rem;font-weight:700;margin-bottom:8px;text-align:center}
+.gate-sub{color:var(--muted);font-size:0.875rem;line-height:1.6;margin-bottom:24px;text-align:center}
+.gate-label{display:block;font-size:0.75rem;font-family:'Space Mono',monospace;color:var(--muted);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:8px}
+.gate-input{width:100%;background:var(--navy-light);border:1.5px solid var(--border);border-radius:10px;padding:12px 16px;color:var(--white);font-size:0.9rem;font-family:'DM Sans',sans-serif;margin-bottom:6px;transition:border-color 0.2s}
+.gate-input:focus{outline:none;border-color:var(--green)}
+.gate-input.error{border-color:var(--red)}
+.gate-err{font-size:0.78rem;color:var(--red);margin-bottom:14px;display:none}
+.gate-btn{display:block;width:100%;background:var(--green);color:var(--navy);border:none;border-radius:50px;padding:15px;font-size:0.95rem;font-weight:700;font-family:'DM Sans',sans-serif;cursor:pointer;margin-bottom:10px;transition:all 0.2s}
+.gate-btn:hover{background:#00e676;transform:translateY(-1px)}
+.gate-btn.secondary{background:transparent;color:var(--muted);border:1.5px solid var(--border)}
+.gate-btn.secondary:hover{border-color:var(--muted);color:var(--white)}
+
+/* PASSAGE PANEL */
+.passage-panel{background:rgba(100,181,246,0.06);border:1.5px solid rgba(100,181,246,0.25);border-radius:14px;padding:18px 20px;margin-bottom:20px}
+.passage-panel-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;gap:8px}
+.passage-panel-label{font-family:'Space Mono',monospace;font-size:0.6rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--eng);background:rgba(100,181,246,0.12);border:1px solid rgba(100,181,246,0.3);border-radius:50px;padding:4px 12px}
+.passage-panel-title{font-size:0.78rem;font-weight:700;color:var(--white)}
+.passage-toggle-btn{background:transparent;border:1px solid rgba(100,181,246,0.3);color:var(--eng);border-radius:8px;padding:4px 12px;font-size:0.7rem;font-family:'DM Sans',sans-serif;cursor:pointer;white-space:nowrap;transition:all 0.18s}
+.passage-toggle-btn:hover{background:rgba(100,181,246,0.1)}
+.passage-text{font-size:0.88rem;line-height:1.8;color:#d0daf5;font-style:normal;border-top:1px solid rgba(100,181,246,0.15);padding-top:12px;margin-top:4px}
+.passage-text.collapsed{display:none}
+.passage-qnum-tag{display:inline-block;font-size:0.68rem;font-family:'Space Mono',monospace;color:var(--eng);opacity:0.75}
+
+/* DISCLAIMER BANNER */
+.disclaimer-bar{background:rgba(255,214,0,0.08);border:1px solid rgba(255,214,0,0.25);border-radius:10px;padding:12px 16px;font-size:0.78rem;color:var(--gold);line-height:1.6;text-align:center;margin:20px 0}
+
+/* HEADER */
+.header{position:sticky;top:38px;z-index:100;background:rgba(10,15,46,0.95);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:14px 24px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.header-logo{font-family:'Space Mono',monospace;font-size:0.7rem;color:var(--green);letter-spacing:0.15em;text-transform:uppercase}
+.header-title{font-size:0.88rem;font-weight:600;color:var(--white);text-align:center}
+.timer-box{font-family:'Space Mono',monospace;font-size:1rem;color:var(--gold);background:rgba(255,214,0,0.08);border:1px solid rgba(255,214,0,0.3);border-radius:8px;padding:6px 14px;min-width:80px;text-align:center}
+
+/* PROGRESS */
+.progress-bar-wrap{padding:10px 24px 0;position:relative;z-index:1}
+.progress-bar-track{height:4px;background:var(--border);border-radius:2px;overflow:hidden}
+.progress-bar-fill{height:100%;background:linear-gradient(90deg,var(--green),var(--gold));border-radius:2px;transition:width 0.4s ease;width:0%}
+.progress-label{font-size:0.72rem;color:var(--muted);margin-top:6px;font-family:'Space Mono',monospace}
+
+/* SUBJECT TABS */
+.subject-tabs{display:flex;gap:8px;padding:12px 24px 0;overflow-x:auto;position:relative;z-index:1}
+.subj-tab{background:var(--card);border:1.5px solid var(--border);border-radius:50px;padding:7px 16px;font-size:0.78rem;font-family:'DM Sans',sans-serif;font-weight:600;cursor:pointer;white-space:nowrap;transition:all 0.2s;color:var(--muted)}
+.subj-tab.active-all{border-color:var(--white);color:var(--white);background:rgba(255,255,255,0.08)}
+.subj-tab.active-eng{border-color:var(--eng);color:var(--eng);background:rgba(100,181,246,0.1)}
+.subj-tab.active-chem{border-color:var(--chem);color:var(--chem);background:rgba(0,200,83,0.1)}
+.subj-tab.active-bio{border-color:var(--bio);color:var(--bio);background:rgba(255,152,0,0.1)}
+.subj-tab.active-phy{border-color:var(--phy);color:var(--phy);background:rgba(206,147,216,0.1)}
+.subj-tab.active-math{border-color:var(--math);color:var(--math);background:rgba(255,143,0,0.1)}
+.subj-tab.active-econ{border-color:var(--econ);color:var(--econ);background:rgba(38,198,218,0.1)}
+.subj-tab.active-govt{border-color:var(--govt);color:var(--govt);background:rgba(171,71,188,0.1)}
+.subj-tab.active-acct{border-color:var(--acct);color:var(--acct);background:rgba(102,187,106,0.1)}
+.subj-tab:not([class*=active]):hover{border-color:rgba(255,255,255,0.2);color:var(--white)}
+
+/* INTRO SCREEN */
+#intro-screen{position:relative;z-index:1;max-width:760px;margin:50px auto;padding:0 24px;text-align:center;animation:fadeUp 0.6s ease both}
+.badge{display:inline-block;background:rgba(0,200,83,0.12);border:1px solid rgba(0,200,83,0.4);color:var(--green);font-family:'Space Mono',monospace;font-size:0.65rem;letter-spacing:0.18em;text-transform:uppercase;padding:5px 14px;border-radius:50px;margin-bottom:24px}
+.intro-title{font-size:clamp(1.8rem,5vw,3rem);font-weight:700;line-height:1.1;margin-bottom:16px;background:linear-gradient(135deg,var(--white) 60%,var(--green));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.intro-sub{color:var(--muted);font-size:0.95rem;line-height:1.6;margin-bottom:36px;max-width:580px;margin-left:auto;margin-right:auto}
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:32px}
+.stat-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:16px 10px}
+.stat-num{font-family:'Space Mono',monospace;font-size:1.6rem;font-weight:700;color:var(--green);display:block}
+.stat-lbl{font-size:0.72rem;color:var(--muted);margin-top:4px;display:block}
+.subjects-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:28px}
+.subj-card{border-radius:12px;padding:14px 16px;text-align:left;border:1px solid}
+.subj-card.eng{background:rgba(100,181,246,0.07);border-color:rgba(100,181,246,0.25)}
+.subj-card.chem{background:rgba(0,200,83,0.07);border-color:rgba(0,200,83,0.25)}
+.subj-card.bio{background:rgba(255,152,0,0.07);border-color:rgba(255,152,0,0.25)}
+.subj-card.phy{background:rgba(206,147,216,0.07);border-color:rgba(206,147,216,0.25)}
+.subj-card.math{background:rgba(255,143,0,0.07);border-color:rgba(255,143,0,0.25)}
+.subj-card.econ{background:rgba(38,198,218,0.07);border-color:rgba(38,198,218,0.25)}
+.subj-card.govt{background:rgba(171,71,188,0.07);border-color:rgba(171,71,188,0.25)}
+.subj-card.acct{background:rgba(102,187,106,0.07);border-color:rgba(102,187,106,0.25)}
+.subj-card-name{font-weight:700;font-size:0.9rem;margin-bottom:2px}
+.subj-card-info{font-size:0.75rem;color:var(--muted)}
+.rules{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:18px 22px;text-align:left;margin-bottom:32px}
+.rules h3{font-size:0.72rem;font-family:'Space Mono',monospace;color:var(--green);letter-spacing:0.12em;text-transform:uppercase;margin-bottom:10px}
+.rules ul{list-style:none;display:flex;flex-direction:column;gap:7px}
+.rules li{font-size:0.85rem;color:var(--muted);padding-left:18px;position:relative}
+.rules li::before{content:'→';position:absolute;left:0;color:var(--green);font-size:0.75rem}
+.btn-start{background:var(--green);color:var(--navy);border:none;border-radius:50px;padding:16px 48px;font-size:1rem;font-weight:700;font-family:'DM Sans',sans-serif;cursor:pointer;transition:all 0.2s;box-shadow:0 0 30px rgba(0,200,83,0.3)}
+.btn-start:hover{transform:translateY(-2px);box-shadow:0 0 40px rgba(0,200,83,0.5);background:#00e676}
+
+/* QUIZ SCREEN */
+#quiz-screen{display:none;position:relative;z-index:1;max-width:900px;margin:0 auto;padding:20px 24px 120px}
+.question-card{background:var(--navy-mid);border:1px solid var(--border);border-radius:18px;padding:28px 32px;margin-bottom:16px;box-shadow:var(--shadow);animation:fadeUp 0.35s ease both}
+.q-meta{display:flex;align-items:center;gap:10px;margin-bottom:18px;flex-wrap:wrap}
+.q-num{font-family:'Space Mono',monospace;font-size:0.68rem;color:var(--green);background:rgba(0,200,83,0.1);border:1px solid rgba(0,200,83,0.3);border-radius:6px;padding:4px 10px;letter-spacing:0.1em}
+.q-topic{font-size:0.68rem;color:var(--muted);background:var(--card);border-radius:6px;padding:4px 10px;border:1px solid var(--border)}
+.q-subj-badge{font-size:0.65rem;border-radius:6px;padding:4px 10px;border:1px solid;font-family:'Space Mono',monospace;letter-spacing:0.05em;margin-left:auto}
+.q-subj-badge.eng{color:var(--eng);border-color:rgba(100,181,246,0.3);background:rgba(100,181,246,0.08)}
+.q-subj-badge.chem{color:var(--chem);border-color:rgba(0,200,83,0.3);background:rgba(0,200,83,0.08)}
+.q-subj-badge.bio{color:var(--bio);border-color:rgba(255,152,0,0.3);background:rgba(255,152,0,0.08)}
+.q-subj-badge.phy{color:var(--phy);border-color:rgba(206,147,216,0.3);background:rgba(206,147,216,0.08)}
+.q-subj-badge.math{color:var(--math);border-color:rgba(255,143,0,0.3);background:rgba(255,143,0,0.08)}
+.q-subj-badge.econ{color:var(--econ);border-color:rgba(38,198,218,0.3);background:rgba(38,198,218,0.08)}
+.q-subj-badge.govt{color:var(--govt);border-color:rgba(171,71,188,0.3);background:rgba(171,71,188,0.08)}
+.q-subj-badge.acct{color:var(--acct);border-color:rgba(102,187,106,0.3);background:rgba(102,187,106,0.08)}
+.q-context{background:rgba(255,214,0,0.05);border:1px solid rgba(255,214,0,0.15);border-radius:10px;padding:14px 16px;font-size:0.82rem;color:#d4c5a0;line-height:1.7;margin-bottom:18px;font-style:italic}
+.q-text{font-size:1rem;line-height:1.65;color:var(--white);margin-bottom:24px;font-weight:400}
+.options-grid{display:flex;flex-direction:column;gap:9px}
+.option-btn{display:flex;align-items:flex-start;gap:12px;background:var(--card);border:1.5px solid var(--border);border-radius:12px;padding:12px 16px;cursor:pointer;transition:all 0.18s;text-align:left;color:var(--white);font-family:'DM Sans',sans-serif;font-size:0.9rem;line-height:1.5;width:100%}
+.option-btn:hover:not(:disabled){border-color:rgba(0,200,83,0.4);background:rgba(0,200,83,0.06)}
+.option-btn:disabled{cursor:default}
+.option-btn.correct{border-color:var(--green);background:rgba(0,200,83,0.15)}
+.option-btn.wrong{border-color:var(--red);background:rgba(255,23,68,0.1)}
+.opt-letter{font-family:'Space Mono',monospace;font-size:0.72rem;font-weight:700;color:var(--muted);background:var(--navy-light);border-radius:6px;padding:4px 8px;flex-shrink:0;margin-top:1px;transition:all 0.18s}
+.option-btn.correct .opt-letter{background:var(--green);color:var(--navy)}
+.option-btn.wrong .opt-letter{background:var(--red);color:#fff}
+.option-btn.selected{border-color:var(--gold);background:rgba(255,214,0,0.09)}
+.option-btn.selected .opt-letter{background:var(--gold);color:var(--navy)}
+.learn-toggle{display:flex;gap:12px;align-items:flex-start;background:var(--card);border:1.5px solid var(--border);border-radius:12px;padding:14px 16px;margin-top:20px;cursor:pointer;font-size:0.85rem;line-height:1.5;color:var(--muted)}
+.learn-toggle input{margin-top:3px;width:18px;height:18px;accent-color:#00c853;flex-shrink:0}
+.learn-toggle strong{color:var(--white)}
+.expl{display:inline-block;margin-top:6px;color:var(--muted);font-size:0.82rem;line-height:1.55}
+.weak-link{display:flex;justify-content:space-between;gap:12px;align-items:center;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:12px 16px;margin-bottom:8px;color:var(--white);text-decoration:none;font-size:0.88rem}
+.weak-link:hover{border-color:rgba(0,200,83,0.5)}
+.weak-miss{color:var(--gold);font-family:'Space Mono',monospace;font-size:0.72rem;white-space:nowrap}
+.feedback-box{margin-top:14px;border-radius:10px;padding:12px 16px;font-size:0.85rem;line-height:1.6;display:none}
+.feedback-box.correct-fb{background:rgba(0,200,83,0.08);border:1px solid rgba(0,200,83,0.3);color:#a5d6a7}
+.feedback-box.wrong-fb{background:rgba(255,23,68,0.08);border:1px solid rgba(255,23,68,0.3);color:#ef9a9a}
+
+/* Q MAP */
+.q-map{background:var(--navy-mid);border:1px solid var(--border);border-radius:16px;padding:16px;margin-bottom:16px}
+.q-map-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px}
+.q-map-title{font-family:'Space Mono',monospace;font-size:0.65rem;color:var(--muted);letter-spacing:0.1em;text-transform:uppercase}
+.q-map-legend{display:flex;gap:10px;flex-wrap:wrap}
+.qml-item{display:flex;align-items:center;gap:5px;font-size:0.68rem;color:var(--muted)}
+.qml-dot{width:10px;height:10px;border-radius:3px}
+.qml-dot.answered{background:var(--green)}
+.qml-dot.current{background:var(--gold)}
+.qml-dot.unanswered{background:var(--border);border:1px solid var(--muted)}
+.q-map-grid{display:flex;flex-wrap:wrap;gap:5px}
+.qm-dot{width:30px;height:30px;border-radius:6px;background:var(--navy-light);border:1px solid var(--border);font-size:0.62rem;font-family:'Space Mono',monospace;color:var(--muted);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all 0.15s}
+.qm-dot:hover{border-color:rgba(255,255,255,0.3)}
+.qm-dot.answered{background:rgba(0,200,83,0.2);border-color:rgba(0,200,83,0.4);color:var(--green)}
+.qm-dot.current{background:var(--gold);border-color:var(--gold);color:var(--navy);font-weight:700}
+.qm-dot.eng-dot{border-color:rgba(100,181,246,0.3)}
+.qm-dot.chem-dot{border-color:rgba(0,200,83,0.2)}
+.qm-dot.bio-dot{border-color:rgba(255,152,0,0.3)}
+.qm-dot.phy-dot{border-color:rgba(206,147,216,0.3)}
+.qm-dot.math-dot{border-color:rgba(255,143,0,0.3)}
+.qm-dot.econ-dot{border-color:rgba(38,198,218,0.3)}
+.qm-dot.govt-dot{border-color:rgba(171,71,188,0.3)}
+.qm-dot.acct-dot{border-color:rgba(102,187,106,0.3)}
+
+/* STICKY NAV */
+.sticky-nav{position:fixed;bottom:0;left:0;right:0;z-index:50;background:rgba(10,15,46,0.97);backdrop-filter:blur(12px);border-top:1px solid var(--border);padding:14px 24px;display:none;align-items:center;justify-content:space-between;gap:12px}
+.nav-info{font-size:0.78rem;color:var(--muted);font-family:'Space Mono',monospace}
+.nav-btns{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.btn-nav{border:1.5px solid var(--border);background:var(--card);color:var(--white);border-radius:10px;padding:9px 18px;font-size:0.82rem;font-family:'DM Sans',sans-serif;font-weight:600;cursor:pointer;transition:all 0.18s}
+.btn-nav:hover{border-color:var(--green);color:var(--green)}
+.btn-nav.primary{background:var(--green);border-color:var(--green);color:var(--navy);font-weight:700}
+.btn-nav.primary:hover{background:#00e676}
+.btn-nav.danger{background:var(--red);border-color:var(--red);color:#fff}
+
+/* RESULT SCREEN */
+#result-screen{display:none;position:relative;z-index:1;max-width:900px;margin:0 auto;padding:40px 24px 80px;animation:fadeUp 0.5s ease both}
+.result-hero{text-align:center;margin-bottom:40px}
+.score-ring{width:160px;height:160px;margin:0 auto 20px;position:relative}
+.score-ring svg{transform:rotate(-90deg)}
+.score-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.score-pct{font-family:'Space Mono',monospace;font-size:2rem;font-weight:700;color:var(--white);line-height:1}
+.score-lbl{font-size:0.65rem;color:var(--muted);margin-top:4px;letter-spacing:0.1em;text-transform:uppercase}
+.result-grade{font-size:1.5rem;font-weight:700;margin-bottom:6px}
+.result-msg{color:var(--muted);font-size:0.9rem;max-width:480px;margin:0 auto;line-height:1.6}
+.result-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:36px}
+.result-stat{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:18px 12px;text-align:center}
+.rs-num{font-family:'Space Mono',monospace;font-size:1.6rem;font-weight:700;display:block;margin-bottom:4px}
+.rs-lbl{font-size:0.72rem;color:var(--muted)}
+.rs-correct .rs-num{color:var(--green)}
+.rs-wrong .rs-num{color:var(--red)}
+.rs-skip .rs-num{color:var(--muted)}
+.rs-score .rs-num{color:var(--gold)}
+
+/* SUBJECT BREAKDOWN */
+.subj-breakdown{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:36px}
+.sb-card{border-radius:14px;padding:18px;border:1px solid}
+.sb-card.eng{background:rgba(100,181,246,0.07);border-color:rgba(100,181,246,0.25)}
+.sb-card.chem{background:rgba(0,200,83,0.07);border-color:rgba(0,200,83,0.25)}
+.sb-card.bio{background:rgba(255,152,0,0.07);border-color:rgba(255,152,0,0.25)}
+.sb-card.phy{background:rgba(206,147,216,0.07);border-color:rgba(206,147,216,0.25)}
+.sb-name{font-size:0.75rem;font-family:'Space Mono',monospace;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:10px}
+.sb-name.eng{color:var(--eng)}.sb-name.chem{color:var(--chem)}.sb-name.bio{color:var(--bio)}.sb-name.phy{color:var(--phy)}
+.sb-score{font-size:1.4rem;font-weight:700;font-family:'Space Mono',monospace;color:var(--white)}
+.sb-bar-track{height:6px;background:var(--border);border-radius:3px;overflow:hidden;margin-top:10px}
+.sb-bar-fill{height:100%;border-radius:3px;transition:width 1s ease}
+.sb-bar-fill.eng{background:var(--eng)}.sb-bar-fill.chem{background:var(--chem)}.sb-bar-fill.bio{background:var(--bio)}.sb-bar-fill.phy{background:var(--phy)}
+.sb-bar-fill.math{background:var(--math)}.sb-bar-fill.econ{background:var(--econ)}.sb-bar-fill.govt{background:var(--govt)}.sb-bar-fill.acct{background:var(--acct)}
+.sb-name.eng{color:var(--eng)}.sb-name.chem{color:var(--chem)}.sb-name.bio{color:var(--bio)}.sb-name.phy{color:var(--phy)}
+.sb-name.math{color:var(--math)}.sb-name.econ{color:var(--econ)}.sb-name.govt{color:var(--govt)}.sb-name.acct{color:var(--acct)}
+.sb-card.eng{background:rgba(100,181,246,0.07);border-color:rgba(100,181,246,0.25)}
+.sb-card.chem{background:rgba(0,200,83,0.07);border-color:rgba(0,200,83,0.25)}
+.sb-card.bio{background:rgba(255,152,0,0.07);border-color:rgba(255,152,0,0.25)}
+.sb-card.phy{background:rgba(206,147,216,0.07);border-color:rgba(206,147,216,0.25)}
+.sb-card.math{background:rgba(255,143,0,0.07);border-color:rgba(255,143,0,0.25)}
+.sb-card.econ{background:rgba(38,198,218,0.07);border-color:rgba(38,198,218,0.25)}
+.sb-card.govt{background:rgba(171,71,188,0.07);border-color:rgba(171,71,188,0.25)}
+.sb-card.acct{background:rgba(102,187,106,0.07);border-color:rgba(102,187,106,0.25)}
+
+/* SUBJECT SELECTION SCREEN */
+#subject-select-screen{position:fixed;inset:0;background:var(--navy);z-index:900;overflow-y:auto;padding-bottom:80px;display:none}
+.ss-wrap{max-width:660px;margin:0 auto;padding:32px 20px}
+.preset-btn{background:var(--card);border:1.5px solid var(--border);color:var(--muted);border-radius:50px;padding:8px 18px;font-size:0.8rem;font-family:'DM Sans',sans-serif;font-weight:600;cursor:pointer;transition:all 0.2s}
+.preset-btn:hover{border-color:var(--green);color:var(--green);background:rgba(0,200,83,0.06)}
+.ss-locked{background:rgba(0,200,83,0.06);border:1.5px solid rgba(0,200,83,0.25);border-radius:14px;padding:14px 18px;display:flex;align-items:center;gap:14px;margin-bottom:10px}
+.ss-card{background:var(--navy-mid);border:1.5px solid var(--border);border-radius:14px;padding:14px 18px;display:flex;align-items:center;gap:14px;cursor:pointer;transition:all 0.2s}
+.ss-card:hover{border-color:rgba(255,255,255,0.2)}
+.ss-card.selected{border-color:var(--green);background:rgba(0,200,83,0.06)}
+.ss-icon{font-size:1.5rem;flex-shrink:0;width:36px;text-align:center}
+.ss-info{flex:1}
+.ss-name{font-size:0.92rem;font-weight:700;color:var(--white);margin-bottom:2px}
+.ss-desc{font-size:0.7rem;color:var(--muted)}
+.ss-lock{font-family:'Space Mono',monospace;font-size:0.6rem;color:var(--green);background:rgba(0,200,83,0.1);border:1px solid rgba(0,200,83,0.3);padding:4px 10px;border-radius:50px;white-space:nowrap}
+.ss-check{width:22px;height:22px;border-radius:50%;border:2px solid var(--border);background:var(--navy-light);display:flex;align-items:center;justify-content:center;font-size:0.8rem;flex-shrink:0;transition:all 0.2s;color:transparent}
+.ss-card.selected .ss-check{background:var(--green);border-color:var(--green);color:var(--navy);font-weight:700}
+.ss-counter{font-family:'Space Mono',monospace;font-size:0.72rem;text-align:center;padding:12px;color:var(--muted);letter-spacing:0.08em}
+
+/* REVIEW */
+.review-section{margin-top:8px}
+.review-title{font-family:'Space Mono',monospace;font-size:0.68rem;color:var(--green);letter-spacing:0.15em;text-transform:uppercase;margin-bottom:16px;display:flex;align-items:center;gap:12px}
+.review-title::after{content:'';flex:1;height:1px;background:var(--border)}
+.review-filter{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap}
+.rf-btn{background:var(--card);border:1px solid var(--border);color:var(--muted);border-radius:50px;padding:6px 14px;font-size:0.75rem;cursor:pointer;transition:all 0.18s}
+.rf-btn.active{background:rgba(0,200,83,0.1);border-color:rgba(0,200,83,0.4);color:var(--green)}
+.review-item{background:var(--navy-mid);border-radius:14px;padding:20px 22px;margin-bottom:10px;border-left:3px solid var(--border)}
+.review-item.ri-correct{border-left-color:var(--green)}
+.review-item.ri-wrong{border-left-color:var(--red)}
+.review-item.ri-skipped{border-left-color:var(--muted)}
+.ri-header{display:flex;align-items:center;gap:10px;margin-bottom:10px;flex-wrap:wrap}
+.ri-qnum{font-family:'Space Mono',monospace;font-size:0.65rem;color:var(--green);background:rgba(0,200,83,0.1);border:1px solid rgba(0,200,83,0.3);border-radius:5px;padding:3px 8px}
+.ri-status{font-size:0.7rem;font-weight:700;font-family:'Space Mono',monospace;padding:3px 8px;border-radius:5px}
+.ri-status.correct{background:rgba(0,200,83,0.15);color:var(--green)}
+.ri-status.wrong{background:rgba(255,23,68,0.15);color:var(--red)}
+.ri-status.skipped{background:rgba(136,146,176,0.15);color:var(--muted)}
+.ri-topic{font-size:0.68rem;color:var(--muted);padding:3px 8px;background:var(--navy-light);border-radius:5px}
+.ri-question{font-size:0.88rem;color:var(--white);margin-bottom:8px;line-height:1.55}
+.ri-ans{font-size:0.82rem;color:var(--muted);line-height:1.5}
+.correct-ans{color:var(--green);font-weight:600}
+.wrong-chosen{color:var(--red)}
+
+/* NON-AFFILIATION NOTICE */
+.non-affil{background:rgba(255,23,68,0.06);border:1px solid rgba(255,23,68,0.2);border-radius:12px;padding:14px 18px;font-size:0.78rem;color:#ef9a9a;line-height:1.6;text-align:center;margin-top:24px}
+
+/* SPIN */
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* CUSTOM MODAL (replaces confirm/alert — blocked by Google Sites) */
+#custom-modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:9999;display:none;align-items:center;justify-content:center;padding:24px;backdrop-filter:blur(4px)}
+#custom-modal-overlay.visible{display:flex}
+.custom-modal{background:var(--navy-mid);border:1px solid var(--border);border-radius:20px;padding:32px 28px;max-width:420px;width:100%;text-align:center;animation:fadeUp 0.25s ease both;box-shadow:0 24px 60px rgba(0,0,0,0.6)}
+.custom-modal-icon{font-size:2.2rem;margin-bottom:12px}
+.custom-modal-title{font-size:1.1rem;font-weight:700;margin-bottom:8px;color:var(--white)}
+.custom-modal-msg{font-size:0.875rem;color:var(--muted);line-height:1.6;margin-bottom:24px}
+.custom-modal-btns{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.cm-btn{border:none;border-radius:50px;padding:11px 28px;font-size:0.9rem;font-weight:700;font-family:'DM Sans',sans-serif;cursor:pointer;transition:all 0.18s}
+.cm-btn.primary{background:var(--green);color:var(--navy)}
+.cm-btn.primary:hover{background:#00e676}
+.cm-btn.danger{background:var(--red);color:#fff}
+.cm-btn.danger:hover{background:#ff4569}
+.cm-btn.secondary{background:var(--card);color:var(--white);border:1.5px solid var(--border)}
+.cm-btn.secondary:hover{border-color:var(--muted)}
+
+/* RESPONSIVE */
+@media(max-width:600px){
+  .stats-grid{grid-template-columns:repeat(2,1fr)}
+  .subjects-grid{grid-template-columns:1fr}
+  .result-stats{grid-template-columns:repeat(2,1fr)}
+  .subj-breakdown{grid-template-columns:1fr}
+  .question-card{padding:20px 18px}
+  .nav-btns{gap:6px}
+  .btn-nav{padding:8px 12px;font-size:0.78rem}
+}
+</style>
+</head>
+<body>
+
+<!-- ====== WELCOME SCREEN (free, no payment) ====== -->
+<div id="gate-overlay">
+  <div class="marquee-banner" style="position:relative;top:auto;flex-shrink:0">
+    <div class="marquee-track">
+      <div class="marquee-segment">
+        <span class="marquee-text brand">⭐ Hasbal Tutorial Centre</span><span class="marquee-sep">◆</span>
+        <span class="marquee-text">✅ 100% Free Practice — No Payment Required</span><span class="marquee-sep">◆</span>
+        <span class="marquee-text">JAMB UTME 2027 Mock Exam — 180 Questions</span><span class="marquee-sep">◆</span>
+        <span class="marquee-text brand">⭐ Hasbal Tutorial Centre</span><span class="marquee-sep">◆</span>
+        <span class="marquee-text">Chemistry · Biology · Physics · Use of English</span><span class="marquee-sep">◆</span>
+      </div>
+      <div class="marquee-segment">
+        <span class="marquee-text brand">⭐ Hasbal Tutorial Centre</span><span class="marquee-sep">◆</span>
+        <span class="marquee-text">✅ 100% Free Practice — No Payment Required</span><span class="marquee-sep">◆</span>
+        <span class="marquee-text">JAMB UTME 2027 Mock Exam — 180 Questions</span><span class="marquee-sep">◆</span>
+        <span class="marquee-text brand">⭐ Hasbal Tutorial Centre</span><span class="marquee-sep">◆</span>
+        <span class="marquee-text">Chemistry · Biology · Physics · Use of English</span><span class="marquee-sep">◆</span>
+      </div>
+    </div>
+  </div>
+  <div class="gate-inner">
+
+    <div class="gate-card" id="gate-step-1">
+      <div class="gate-logo">
+        <div class="gate-logo-mark">📚</div>
+        <span class="gate-brand">Hasbal Tutorial Centre</span>
+        <span class="gate-tagline">JAMB UTME 2027 Mock Exam — Free</span>
+      </div>
+      <h2 class="gate-title">Welcome</h2>
+      <p class="gate-sub">This practice exam is completely free — no payment, no account, no waiting. Tell us your name if you'd like it on your result slip, or just start practising.</p>
+      <label class="gate-label">Your Name (optional)</label>
+      <input class="gate-input" id="inp-name" type="text" placeholder="e.g. Adewale Okonkwo" autocomplete="name"/>
+      <button class="gate-btn" onclick="beginPractice()">Start Practice — It's Free →</button>
+      <div class="non-affil" style="margin-top:16px;font-size:0.72rem">⚠️ This mock exam is prepared by Hasbal Tutorial Centre for practice purposes only. It is <strong>NOT affiliated with, endorsed by, or in any way connected to JAMB (Joint Admissions and Matriculation Board) Nigeria</strong>. Questions are independently compiled against the most recently confirmed JAMB syllabus and past-question patterns.</div>
+    </div>
+
+  </div>
+</div>
+
+
+<!-- SUBJECT SELECTION SCREEN -->
+<div id="subject-select-screen">
+  <div class="ss-wrap">
+    <div style="text-align:center;margin-bottom:28px;padding-top:8px">
+      <div class="badge" style="margin-bottom:14px">STEP 1 OF 2 — SUBJECT SELECTION</div>
+      <h2 style="font-size:1.4rem;font-weight:700;margin-bottom:8px">Choose Your Subjects</h2>
+      <p style="color:var(--muted);font-size:0.875rem;line-height:1.6">Use of English is compulsory for all candidates.<br>Select <strong style="color:var(--white)">exactly 3 more subjects</strong> to match your JAMB registration.</p>
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center;align-items:center;margin-bottom:20px">
+      <span style="font-size:0.68rem;color:var(--muted);font-family:'Space Mono',monospace;letter-spacing:0.08em">QUICK PICK:</span>
+      <button class="preset-btn" onclick="applyPreset('science')">⚗️ Science</button>
+      <button class="preset-btn" onclick="applyPreset('commercial')">💼 Commercial</button>
+      <button class="preset-btn" onclick="applyPreset('arts')">🎭 Arts / Soc. Sci.</button>
+    </div>
+    <div class="ss-locked">
+      <div class="ss-icon">📖</div>
+      <div class="ss-info"><div class="ss-name" style="color:var(--eng)">Use of English</div><div class="ss-desc">60 questions · Compulsory for ALL JAMB candidates</div></div>
+      <div class="ss-lock">🔒 Compulsory</div>
+    </div>
+    <div id="ss-grid" style="display:flex;flex-direction:column;gap:8px;margin-top:8px"></div>
+    <div class="ss-counter" id="ss-counter">SELECT 3 MORE SUBJECTS TO CONTINUE</div>
+    <button class="gate-btn" id="ss-confirm-btn" onclick="confirmSubjects()" style="opacity:0.4;cursor:not-allowed" disabled>Continue to Exam Info →</button>
+    <div style="text-align:center;margin-top:14px;font-size:0.82rem"><a href="practice.html" style="color:var(--green)">Not ready for a full mock? Practise one subject at a time →</a></div>
+    <div class="non-affil" style="margin-top:14px;font-size:0.7rem">⚠️ This mock exam is NOT affiliated with JAMB Nigeria. Practice purposes only.</div>
+  </div>
+</div>
+
+<!-- MARQUEE -->
+<div class="marquee-banner" role="marquee">
+  <div class="marquee-track">
+    <div class="marquee-segment">
+      <span class="marquee-text brand">⭐ Hasbal Tutorial Centre</span><span class="marquee-sep">◆</span>
+      <span class="marquee-text">JAMB UTME 2027 Mock — 180 Questions</span><span class="marquee-sep">◆</span>
+      <span class="marquee-text">Chemistry · Biology · Physics · Use of English</span><span class="marquee-sep">◆</span>
+      <span class="marquee-text">🔒 NOT affiliated with JAMB Nigeria</span><span class="marquee-sep">◆</span>
+      <span class="marquee-text brand">⭐ Hasbal Tutorial Centre</span><span class="marquee-sep">◆</span>
+      <span class="marquee-text">Good luck to all UTME 2027 candidates!</span><span class="marquee-sep">◆</span>
+    </div>
+    <div class="marquee-segment">
+      <span class="marquee-text brand">⭐ Hasbal Tutorial Centre</span><span class="marquee-sep">◆</span>
+      <span class="marquee-text">JAMB UTME 2027 Mock — 180 Questions</span><span class="marquee-sep">◆</span>
+      <span class="marquee-text">Chemistry · Biology · Physics · Use of English</span><span class="marquee-sep">◆</span>
+      <span class="marquee-text">🔒 NOT affiliated with JAMB Nigeria</span><span class="marquee-sep">◆</span>
+      <span class="marquee-text brand">⭐ Hasbal Tutorial Centre</span><span class="marquee-sep">◆</span>
+      <span class="marquee-text">Good luck to all UTME 2027 candidates!</span><span class="marquee-sep">◆</span>
+    </div>
+  </div>
+</div>
+
+<!-- HEADER -->
+<header class="header">
+  <div class="header-logo">Hasbal · 2027</div>
+  <div class="header-title" id="header-title">UTME Mock Exam</div>
+  <div class="timer-box" id="timer-display" style="display:none">02:00:00</div>
+</header>
+
+<div class="progress-bar-wrap" id="progress-wrap" style="display:none">
+  <div class="progress-bar-track"><div class="progress-bar-fill" id="progress-fill"></div></div>
+  <div class="progress-label" id="progress-label">0 / 180 answered</div>
+</div>
+
+<div class="subject-tabs" id="subject-tabs" style="display:none" id="subject-tabs-bar">
+  <!-- Dynamically populated by buildSubjectTabs() -->
+</div>
+
+<!-- INTRO SCREEN -->
+<div id="intro-screen" style="display:none">
+  <div class="badge">UTME 2027 — Mock Examination</div>
+  <h1 class="intro-title">JAMB UTME<br>2027 Mock Exam</h1>
+  <p class="intro-sub" id="intro-sub-text">180 exam-standard questions built against the most recently confirmed JAMB UTME syllabus, format, and past-question patterns. Questions shuffle randomly every session.</p>
+
+  <div class="stats-grid">
+    <div class="stat-card"><span class="stat-num" id="intro-q-count">180</span><span class="stat-lbl">Questions</span></div>
+    <div class="stat-card"><span class="stat-num">2<span style="font-size:0.9rem">hrs</span></span><span class="stat-lbl">Time Limit</span></div>
+    <div class="stat-card"><span class="stat-num" id="intro-subj-count">4</span><span class="stat-lbl">Subjects</span></div>
+    <div class="stat-card"><span class="stat-num">400</span><span class="stat-lbl">Est. Max Score</span></div>
+  </div>
+
+  <div class="subjects-grid" id="intro-subjects-grid"></div>
+
+  <div class="rules">
+    <h3>Exam Rules</h3>
+    <ul>
+      <li>Choose one answer per question. You can change any answer until you submit, just like the real CBT.</li>
+      <li>Use the subject tabs or question map to navigate freely between questions.</li>
+      <li>Timer counts down from 2 hours. Exam auto-submits when time runs out.</li>
+      <li>Questions are shuffled randomly — each session has a unique order.</li>
+      <li>There is no feedback during the exam. Results, correct answers and explanations appear after you submit.</li>
+      <li>If your browser closes or refreshes, you can resume this exam on the same device — the clock keeps running.</li>
+    </ul>
+  </div>
+
+  <div class="disclaimer-bar">⚠️ <strong>Disclaimer:</strong> This mock exam is prepared independently by Hasbal Tutorial Centre for practice purposes only. It is <strong>NOT affiliated with, endorsed by, or connected to JAMB Nigeria</strong> in any way. The Use of English novel section is based on <em>The Lekki Headmaster</em> by Kabir Alabi Garba — JAMB's confirmed reading text through the 2026 UTME. JAMB typically announces each cycle's reading text shortly before registration opens, so confirm the current text at <strong>jamb.gov.ng</strong> once 2027 registration details are released.</div>
+
+  <label class="learn-toggle"><input type="checkbox" id="learning-mode"><span><strong>Learning mode</strong> — show the correct answer and explanation right after each question (answers are then locked). Leave this off for a true exam simulation.</span></label>
+
+  <button class="btn-start" onclick="launchExam()" style="margin-top:24px">Begin Mock Exam →</button>
+</div>
+
+<!-- QUIZ SCREEN -->
+<div id="quiz-screen" style="display:none">
+  <div class="q-map" id="q-map">
+    <div class="q-map-header">
+      <span class="q-map-title">Question Navigator</span>
+      <div class="q-map-legend">
+        <span class="qml-item"><span class="qml-dot answered"></span>Answered</span>
+        <span class="qml-item"><span class="qml-dot current"></span>Current</span>
+        <span class="qml-item"><span class="qml-dot unanswered"></span>Unanswered</span>
+      </div>
+    </div>
+    <div class="q-map-grid" id="q-map-grid"></div>
+  </div>
+  <div id="questions-container"></div>
+  <div class="sticky-nav" id="sticky-nav">
+    <div class="nav-info" id="nav-info">Q1 / 180</div>
+    <div class="nav-btns">
+      <button class="btn-nav" onclick="prevQ()" id="btn-prev">← Prev</button>
+      <button class="btn-nav" onclick="nextQ()" id="btn-next">Next →</button>
+      <button class="btn-nav danger" onclick="submitQuiz()">Submit Exam</button>
+    </div>
+  </div>
+</div>
+
+<!-- RESULT SCREEN -->
+<div id="result-screen"></div>
+
+<!-- CUSTOM MODAL — replaces confirm/alert (blocked by Google Sites) -->
+<div id="custom-modal-overlay">
+  <div class="custom-modal">
+    <div class="custom-modal-icon" id="cm-icon">⚠️</div>
+    <div class="custom-modal-title" id="cm-title"></div>
+    <div class="custom-modal-msg" id="cm-msg"></div>
+    <div class="custom-modal-btns" id="cm-btns"></div>
+  </div>
+</div>
+
+<script src="questions.js"></script>
+<script>
+// ====================================================
+//  MODAL — replaces confirm() and alert()
+// ====================================================
+function showModal({ icon='⚠️', title, msg, buttons }) {
+  document.getElementById('cm-icon').textContent  = icon;
+  document.getElementById('cm-title').textContent = title;
+  document.getElementById('cm-msg').textContent   = msg;
+  const btns = document.getElementById('cm-btns');
+  btns.innerHTML = '';
+  buttons.forEach(({ label, cls, onClick }) => {
+    const b = document.createElement('button');
+    b.className = `cm-btn ${cls}`;
+    b.textContent = label;
+    b.onclick = () => {
+      closeModal();
+      if (onClick) onClick();
+    };
+    btns.appendChild(b);
+  });
+  document.getElementById('custom-modal-overlay').classList.add('visible');
+}
+
+function closeModal() {
+  document.getElementById('custom-modal-overlay').classList.remove('visible');
+}
+
+function showAlert({ icon='ℹ️', title, msg, onClose }) {
+  showModal({ icon, title, msg, buttons: [{ label:'OK', cls:'primary', onClick: onClose }] });
+}
+
+// ====================================================
+//  COMPREHENSION PASSAGES
+// ====================================================
+// Questions and passages live in questions.js (shared with practice.html)
+const questionBank = QUESTION_BANK;
+
+// ====================================================
+//  SUBJECT INFORMATION REGISTRY
+// ====================================================
+const SUBJECT_INFO = {
+  english:     { label:'Use of English', color:'var(--eng)',  cls:'eng',  icon:'📖', count:60, desc:'Grammar, Comprehension, Oral English & The Lekki Headmaster' },
+  chemistry:   { label:'Chemistry',      color:'var(--chem)', cls:'chem', icon:'🧪', count:40, desc:'Atomic Structure, Bonding, Stoichiometry & Organic Chemistry' },
+  biology:     { label:'Biology',        color:'var(--bio)',  cls:'bio',  icon:'🌿', count:40, desc:'Cell Biology, Genetics, Ecology & Physiology' },
+  physics:     { label:'Physics',        color:'var(--phy)',  cls:'phy',  icon:'⚡', count:40, desc:'Mechanics, Waves, Electricity & Modern Physics' },
+  mathematics: { label:'Mathematics',    color:'var(--math)', cls:'math', icon:'📐', count:40, desc:'Algebra, Calculus, Statistics, Geometry & Number Theory' },
+  economics:   { label:'Economics',      color:'var(--econ)', cls:'econ', icon:'📊', count:40, desc:'Micro/Macroeconomics, Money & Banking, Trade & Public Finance' },
+  government:  { label:'Government',     color:'var(--govt)', cls:'govt', icon:'🏛️', count:40, desc:'Nigerian Government, Constitutional Law & International Relations' },
+  accounting:  { label:'Accounting',     color:'var(--acct)', cls:'acct', icon:'📒', count:40, desc:'Bookkeeping, Financial Statements, Ratios & Concepts' },
+};
+
+const ELECTIVE_SUBJECTS = ['chemistry','biology','physics','mathematics','economics','government','accounting'];
+
+// ====================================================
+//  GLOBALS
+// ====================================================
+let guestName = '';
+let selectedSubjects = ['english']; // always includes english + 3 chosen
+let quizStarted = false;
+let questions = [];  // shuffled questions
+let currentQ = 0;
+let userAnswers = [];
+let timerInterval;
+let timeLeft = 2 * 60 * 60;  // 2 hours
+let examEndTime = 0;         // wall-clock end time (survives throttled timers / backgrounded tabs)
+let learningMode = false;    // false = real exam simulation; true = instant feedback
+const ATTEMPT_KEY = 'hsb_attempt_v2';
+let currentSubjectFilter = 'all';
+
+// ====================================================
+//  SHUFFLE
+// ====================================================
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function sample(arr, n) { return shuffle(arr).slice(0, n); }
+
+// Builds one attempt: English = 60 (all passage groups + 10 reading-text questions + fill),
+// each elective = 40 sampled from its pool. Bigger pools => a different paper each time.
+function buildShuffledQuestions() {
+  const engAll = questionBank.filter(q => q.subject === 'english');
+  const passageQs = engAll.filter(q => q.passage);
+  const novelPicked = sample(engAll.filter(q => !q.passage && q.topic === 'Lekki Headmaster'), 10);
+  const otherPool = engAll.filter(q => !q.passage && q.topic !== 'Lekki Headmaster');
+  const need = Math.max(0, 60 - passageQs.length - novelPicked.length);
+  const engNonPassage = shuffle([...novelPicked, ...sample(otherPool, need)]);
+  const passageIds = [...new Set(passageQs.map(q => q.passage))];
+  const passageGroups = shuffle(passageIds).map(pid => passageQs.filter(q => q.passage === pid));
+  const engWithPassages = [...engNonPassage];
+  passageGroups.forEach(group => {
+    const pos = Math.floor(Math.random() * (engWithPassages.length + 1));
+    engWithPassages.splice(pos, 0, ...group);
+  });
+  const electiveQs = selectedSubjects
+    .filter(s => s !== 'english')
+    .flatMap(s => sample(questionBank.filter(q => q.subject === s), 40));
+  return [...engWithPassages, ...electiveQs];
+}
+
+// ====================================================
+//  PAGE LOAD — straight to the free welcome screen
+// ====================================================
+window.addEventListener('DOMContentLoaded', () => {
+  const att = loadAttempt();
+  if (att) { promptResume(att); return; }
+  showFreshStart();
+});
+
+function showFreshStart() {
+  try {
+    const s = JSON.parse(sessionStorage.getItem('hsb_session'));
+    if (s && s.valid) {
+      guestName = s.name || '';
+      document.getElementById('gate-overlay').style.display = 'none';
+      showSubjectSelect();
+      return;
+    }
+  } catch(e) {}
+  document.getElementById('gate-overlay').style.display = 'flex';
+}
+
+// ---- Unfinished-exam recovery (accidental refresh, browser killed, phone locked) ----
+function saveAttempt() {
+  try {
+    localStorage.setItem(ATTEMPT_KEY, JSON.stringify({
+      v: 2, ids: questions.map(q => q.id), answers: userAnswers, endTime: examEndTime,
+      subjects: selectedSubjects, learning: learningMode, name: guestName
+    }));
+  } catch(e) {}
+}
+function clearAttempt() { try { localStorage.removeItem(ATTEMPT_KEY); } catch(e) {} }
+function loadAttempt() {
+  try {
+    const a = JSON.parse(localStorage.getItem(ATTEMPT_KEY));
+    if (a && a.v === 2 && Array.isArray(a.ids) && Array.isArray(a.answers) && a.ids.length === a.answers.length && a.ids.length > 0) return a;
+  } catch(e) {}
+  return null;
+}
+function promptResume(att) {
+  document.getElementById('gate-overlay').style.display = 'none';
+  const left = Math.ceil((att.endTime - Date.now()) / 1000);
+  const answered = att.answers.filter(a => a !== null).length;
+  if (left > 0) {
+    showModal({
+      icon: '⏱️', title: 'Resume your exam?',
+      msg: `You have an unfinished exam: ${answered} of ${att.ids.length} answered, about ${Math.ceil(left / 60)} minutes left. The clock kept running while you were away.`,
+      buttons: [
+        { label: 'Discard it', cls: 'secondary', onClick: () => { clearAttempt(); showFreshStart(); } },
+        { label: 'Resume exam', cls: 'primary', onClick: () => resumeAttempt(att) }
+      ]
+    });
+  } else {
+    showModal({
+      icon: '⌛', title: 'Your exam time ended',
+      msg: `Time ran out on your last exam (${answered} of ${att.ids.length} answered). You can see your result now.`,
+      buttons: [
+        { label: 'Discard it', cls: 'secondary', onClick: () => { clearAttempt(); showFreshStart(); } },
+        { label: 'See my result', cls: 'primary', onClick: () => resumeAttempt(att) }
+      ]
+    });
+  }
+}
+function resumeAttempt(att) {
+  const byId = new Map(questionBank.map(q => [q.id, q]));
+  const qs = att.ids.map(id => byId.get(id));
+  if (qs.some(q => !q)) {
+    clearAttempt();
+    showAlert({ icon: 'ℹ️', title: 'Question bank was updated', msg: 'The questions changed since you started that exam, so it can\'t be resumed. Please start a new one.', onClose: showFreshStart });
+    return;
+  }
+  questions = qs; userAnswers = att.answers; selectedSubjects = att.subjects; learningMode = !!att.learning;
+  examEndTime = att.endTime; guestName = att.name || guestName; quizStarted = true;
+  document.getElementById('subject-select-screen').style.display = 'none';
+  document.getElementById('intro-screen').style.display = 'none';
+  if (examEndTime - Date.now() <= 0) { showResults(); return; }
+  const firstOpen = userAnswers.findIndex(a => a === null);
+  enterExamUI(firstOpen === -1 ? 0 : firstOpen);
+}
+
+// ====================================================
+//  BEGIN PRACTICE — free, no payment, no account
+// ====================================================
+function beginPractice() {
+  const nameInput = document.getElementById('inp-name');
+  guestName = (nameInput?.value || '').trim() || 'Student';
+  sessionStorage.setItem('hsb_session', JSON.stringify({ valid: true, name: guestName }));
+  document.getElementById('gate-overlay').style.display = 'none';
+  showSubjectSelect();
+}
+
+function startQuiz() {
+  // Update intro screen to reflect chosen subjects
+  const totalQ = 60 + (selectedSubjects.length - 1) * 40;
+  document.getElementById('intro-q-count').textContent = totalQ;
+  document.getElementById('intro-subj-count').textContent = selectedSubjects.length;
+  const grid = document.getElementById('intro-subjects-grid');
+  grid.innerHTML = selectedSubjects.map(s => {
+    const si = SUBJECT_INFO[s];
+    return `<div class="subj-card ${si.cls}"><div class="subj-card-name" style="color:${si.color}">${si.icon} ${si.label}</div><div class="subj-card-info">${si.count} questions — ${si.desc}</div></div>`;
+  }).join('');
+  document.getElementById('intro-screen').style.display = 'block';
+}
+
+function launchExam() {
+  learningMode = !!(document.getElementById('learning-mode') && document.getElementById('learning-mode').checked);
+  questions = buildShuffledQuestions();
+  userAnswers = new Array(questions.length).fill(null);
+  examEndTime = Date.now() + 2 * 60 * 60 * 1000; // always a fresh 2 hours
+  quizStarted = true;
+  document.getElementById('intro-screen').style.display = 'none';
+  enterExamUI(0);
+  saveAttempt();
+}
+
+function enterExamUI(startIdx) {
+  const totalQ = questions.length;
+  document.getElementById('timer-display').style.color = 'var(--gold)';
+  document.getElementById('quiz-screen').style.display = 'block';
+  document.getElementById('sticky-nav').style.display = 'flex';
+  document.getElementById('timer-display').style.display = 'block';
+  document.getElementById('progress-wrap').style.display = 'block';
+  document.getElementById('subject-tabs').style.display = 'flex';
+  document.getElementById('progress-label').textContent = `0 / ${totalQ} answered`;
+  const nameShort = guestName ? guestName.split(' ')[0] : '';
+  document.getElementById('header-title').textContent = nameShort ? `Good luck, ${nameShort}! — UTME Mock` : 'UTME Mock Exam';
+  buildSubjectTabs();
+  buildQuestions();
+  buildMap();
+  userAnswers.forEach((a, i) => { if (a !== null) restoreAnswerUI(i); });
+  showQ(startIdx);
+  startTimer();
+}
+
+// ====================================================
+//  SUBJECT TABS (dynamic)
+// ====================================================
+function buildSubjectTabs() {
+  const bar = document.getElementById('subject-tabs');
+  const total = questions.length;
+  let html = `<button class="subj-tab active-all" id="tab-all" onclick="filterSubject('all')">All (${total})</button>`;
+  selectedSubjects.forEach(s => {
+    const si = SUBJECT_INFO[s];
+    const cnt = questions.filter(q => q.subject === s).length;
+    html += `<button class="subj-tab" id="tab-${s}" onclick="filterSubject('${s}')">${si.icon} ${si.label} (${cnt})</button>`;
+  });
+  bar.innerHTML = html;
+}
+
+function filterSubject(subj) {
+  currentSubjectFilter = subj;
+  // Update active tab
+  document.querySelectorAll('.subj-tab').forEach(b => {
+    b.className = 'subj-tab';
+    const id = b.id.replace('tab-', '');
+    if (id === subj) {
+      const cls = subj === 'all' ? 'active-all' : SUBJECT_INFO[subj]?.cls;
+      if (cls) b.classList.add('active-' + cls.replace('active-',''));
+    }
+  });
+  // Highlight correct tab
+  const activeEl = document.getElementById('tab-' + subj);
+  if (activeEl) {
+    activeEl.className = 'subj-tab';
+    if (subj === 'all') activeEl.classList.add('active-all');
+    else if (SUBJECT_INFO[subj]) activeEl.classList.add('active-' + SUBJECT_INFO[subj].cls);
+  }
+  if (subj === 'all') { showQ(currentQ); return; }
+  const idx = questions.findIndex(q => q.subject === subj);
+  if (idx !== -1) showQ(idx);
+}
+
+// ====================================================
+//  BUILD QUESTIONS
+// ====================================================
+function buildQuestions() {
+  const container = document.getElementById('questions-container');
+  container.innerHTML = '';
+  questions.forEach((q, i) => {
+    const card = document.createElement('div');
+    card.className = 'question-card';
+    card.id = `qcard-${i}`;
+    card.style.display = 'none';
+    const si = SUBJECT_INFO[q.subject] || { label: q.subject, cls: 'eng' };
+
+    let passageHTML = '';
+    if (q.passage && PASSAGES[q.passage]) {
+      const p = PASSAGES[q.passage];
+      const textId = `passage-text-${i}`;
+      passageHTML = `
+        <div class="passage-panel">
+          <div class="passage-panel-header">
+            <div>
+              <span class="passage-panel-label">${p.label}</span>
+              <div class="passage-panel-title" style="margin-top:6px">${p.title}</div>
+            </div>
+            <button class="passage-toggle-btn" onclick="togglePassage('${textId}',this)">▲ Hide Passage</button>
+          </div>
+          <div class="passage-text" id="${textId}">${p.text}</div>
+        </div>`;
+    }
+
+    card.innerHTML = `
+      <div class="q-meta">
+        <span class="q-num">Q${String(i+1).padStart(3,'0')}</span>
+        <span class="q-topic">${q.topic}</span>
+        <span class="q-subj-badge ${si.cls}">${si.label}</span>
+      </div>
+      ${passageHTML}
+      <div class="q-text">${q.q}</div>
+      <div class="options-grid" id="opts-${i}">
+        ${q.opts.map((o,oi) => `
+          <button class="option-btn" id="opt-${i}-${oi}" onclick="selectAnswer(${i},${oi})">
+            <span class="opt-letter">${['A','B','C','D'][oi]}</span>
+            <span>${o}</span>
+          </button>`).join('')}
+      </div>
+      <div class="feedback-box" id="fb-${i}"></div>`;
+    container.appendChild(card);
+  });
+}
+
+// ====================================================
+//  BUILD MAP
+// ====================================================
+function buildMap() {
+  const grid = document.getElementById('q-map-grid');
+  grid.innerHTML = '';
+  questions.forEach((q, i) => {
+    const dot = document.createElement('div');
+    const si = SUBJECT_INFO[q.subject] || { cls: 'eng' };
+    dot.className = `qm-dot ${si.cls}-dot`;
+    dot.id = `qmd-${i}`;
+    dot.textContent = i + 1;
+    dot.onclick = () => showQ(i);
+    dot.title = `Q${i+1} — ${si.label || q.subject}`;
+    grid.appendChild(dot);
+  });
+}
+
+// ====================================================
+//  PASSAGE TOGGLE
+// ====================================================
+function togglePassage(textId, btn) {
+  const el = document.getElementById(textId);
+  if (el.classList.contains('collapsed')) {
+    el.classList.remove('collapsed');
+    btn.textContent = '▲ Hide Passage';
+  } else {
+    el.classList.add('collapsed');
+    btn.textContent = '▼ Show Passage';
+  }
+}
+function showQ(idx) {
+  document.querySelectorAll('.question-card').forEach(c => c.style.display='none');
+  document.querySelectorAll('.qm-dot').forEach(d => {
+    d.classList.remove('current');
+    const i = parseInt(d.textContent) - 1;
+    if (userAnswers[i] !== null) d.classList.add('answered');
+    else d.classList.remove('answered');
+  });
+  currentQ = idx;
+  document.getElementById(`qcard-${idx}`).style.display = 'block';
+  const dot = document.getElementById(`qmd-${idx}`);
+  dot.classList.add('current');
+  dot.classList.remove('answered');
+  dot.scrollIntoView({ block:'nearest', inline:'nearest' });
+  document.getElementById('nav-info').textContent = `Q${idx+1} / ${questions.length}`;
+  document.getElementById('btn-prev').disabled = idx === 0;
+  document.getElementById('btn-next').style.display = idx === questions.length - 1 ? 'none' : 'inline-block';
+  updateProgress();
+}
+
+// ====================================================
+//  SELECT ANSWER
+// ====================================================
+function showFeedback(qIdx, optIdx) {
+  const q = questions[qIdx];
+  const opts = document.getElementById(`opts-${qIdx}`).querySelectorAll('.option-btn');
+  opts.forEach(o => { o.disabled = true; o.classList.remove('selected'); });
+  const isCorrect = optIdx === q.ans;
+  if (isCorrect) opts[optIdx].classList.add('correct');
+  else { opts[optIdx].classList.add('wrong'); opts[q.ans].classList.add('correct'); }
+  const fb = document.getElementById(`fb-${qIdx}`);
+  fb.style.display = 'block';
+  fb.className = `feedback-box ${isCorrect ? 'correct-fb' : 'wrong-fb'}`;
+  const L = ['A','B','C','D'];
+  fb.textContent = (isCorrect ? `✓ Correct! Answer is ${L[q.ans]}.` : `✗ Incorrect. Correct answer is ${L[q.ans]}: ${q.opts[q.ans]}`)
+    + (q.explanation ? `  💡 ${q.explanation}` : '');
+}
+
+function restoreAnswerUI(i) {
+  const a = userAnswers[i];
+  if (a === null) return;
+  if (learningMode) showFeedback(i, a);
+  else document.getElementById(`opts-${i}`).querySelectorAll('.option-btn')[a].classList.add('selected');
+  document.getElementById(`qmd-${i}`).classList.add('answered');
+}
+
+function selectAnswer(qIdx, optIdx) {
+  if (!quizStarted) return;
+  if (learningMode) {
+    if (userAnswers[qIdx] !== null) return;          // learning mode locks the answer
+    userAnswers[qIdx] = optIdx;
+    showFeedback(qIdx, optIdx);
+    document.getElementById(`qmd-${qIdx}`).classList.add('answered');
+    updateProgress(); saveAttempt();
+    if (!questions[qIdx].explanation && qIdx < questions.length - 1) setTimeout(() => showQ(qIdx + 1), 1400);
+    return;
+  }
+  // Exam mode: no feedback, answers can be changed until submission (like the real CBT)
+  userAnswers[qIdx] = optIdx;
+  document.getElementById(`opts-${qIdx}`).querySelectorAll('.option-btn')
+    .forEach((o, i) => o.classList.toggle('selected', i === optIdx));
+  document.getElementById(`qmd-${qIdx}`).classList.add('answered');
+  updateProgress(); saveAttempt();
+}
+
+function prevQ() { if (currentQ > 0) showQ(currentQ - 1); }
+function nextQ() { if (currentQ < questions.length - 1) showQ(currentQ + 1); }
+
+function updateProgress() {
+  const answered = userAnswers.filter(a => a !== null).length;
+  const pct = (answered / questions.length) * 100;
+  document.getElementById('progress-fill').style.width = pct + '%';
+  document.getElementById('progress-label').textContent = `${answered} / ${questions.length} answered`;
+}
+
+// ====================================================
+//  TIMER
+// ====================================================
+function tickTimer() {
+  timeLeft = Math.max(0, Math.ceil((examEndTime - Date.now()) / 1000));
+  const h = Math.floor(timeLeft / 3600);
+  const m = Math.floor((timeLeft % 3600) / 60);
+  const s = timeLeft % 60;
+  document.getElementById('timer-display').textContent = `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+  if (timeLeft <= 600) document.getElementById('timer-display').style.color = '#ff5252';
+  if (timeLeft <= 0) { clearInterval(timerInterval); showResults(); }
+}
+
+function startTimer() {
+  clearInterval(timerInterval);
+  timerInterval = setInterval(tickTimer, 1000);
+  tickTimer();
+}
+
+// ====================================================
+//  SUBMIT
+// ====================================================
+function submitQuiz() {
+  if (!quizStarted) return;
+  clearInterval(timerInterval);
+  const unanswered = userAnswers.filter(a => a === null).length;
+  showModal({
+    icon: '📋',
+    title: 'Submit Exam?',
+    msg: unanswered > 0
+      ? `You have ${unanswered} unanswered question${unanswered > 1 ? 's' : ''}. Are you sure you want to submit now?`
+      : 'You have answered every question. Submit your exam now?',
+    buttons: [
+      { label: 'Go Back', cls: 'secondary', onClick: () => startTimer() },
+      { label: unanswered > 0 ? 'Submit Anyway' : 'Submit', cls: unanswered > 0 ? 'danger' : 'primary', onClick: () => showResults() }
+    ]
+  });
+}
+
+// ====================================================
+//  RESULTS
+// ====================================================
+function showResults() {
+  quizStarted = false;
+  clearInterval(timerInterval);
+  clearAttempt();
+  document.getElementById('quiz-screen').style.display = 'none';
+  document.getElementById('sticky-nav').style.display = 'none';
+  document.getElementById('timer-display').style.display = 'none';
+  document.getElementById('progress-wrap').style.display = 'none';
+  document.getElementById('subject-tabs').style.display = 'none';
+  const resultScreen = document.getElementById('result-screen');
+  resultScreen.style.display = 'block';
+  document.getElementById('header-title').textContent = 'Your Results';
+
+  // Use selectedSubjects for per-subject stats
+  const subjStats = {};
+  selectedSubjects.forEach(s => {
+    const qs = questions.map((q,i) => ({q,i})).filter(({q}) => q.subject === s);
+    let correct=0, wrong=0, skipped=0;
+    qs.forEach(({q,i}) => {
+      const a = userAnswers[i];
+      if (a === null) skipped++;
+      else if (a === q.ans) correct++;
+      else wrong++;
+    });
+    subjStats[s] = { correct, wrong, skipped, total: qs.length };
+  });
+
+  let totalCorrect=0, totalWrong=0, totalSkipped=0;
+  selectedSubjects.forEach(s => {
+    totalCorrect  += subjStats[s].correct;
+    totalWrong    += subjStats[s].wrong;
+    totalSkipped  += subjStats[s].skipped;
+  });
+
+  const pct       = Math.round((totalCorrect / questions.length) * 100);
+  // Estimated UTME-style score: every subject is scaled to 100 marks (English 60 Qs, others 40 Qs),
+  // then summed. JAMB does not publish an official conversion, so this is a practice estimate only.
+  let estScore = 0;
+  selectedSubjects.forEach(s => {
+    const st = subjStats[s];
+    st.score100 = st.total ? Math.round((st.correct / st.total) * 1000) / 10 : 0;
+    estScore += st.score100;
+  });
+  const jambScore = Math.round(estScore);
+
+  let grade, gradeColor, msg;
+  if      (pct >= 70) { grade='Excellent! 🎉'; gradeColor='#00c853'; msg='Outstanding! You are very well prepared for the JAMB UTME.'; }
+  else if (pct >= 60) { grade='Very Good 👍';  gradeColor='#64b5f6'; msg='Great performance! Focus on weaker areas and you\'ll excel.'; }
+  else if (pct >= 50) { grade='Good Pass';      gradeColor='#81c784'; msg='Solid effort. Revise weak areas and practice more past questions.'; }
+  else if (pct >= 40) { grade='Average';        gradeColor='#ffd600'; msg='You need more intensive practice. Focus on key topics.'; }
+  else                { grade='Needs Work';     gradeColor='#ff5252'; msg='Increase your study intensity. Return to the syllabus daily.'; }
+
+  const circumference = 2 * Math.PI * 66;
+  const offset        = circumference - (pct / 100) * circumference;
+
+  const subjBreakdownHTML = selectedSubjects.map(s => {
+    const si  = SUBJECT_INFO[s];
+    const st  = subjStats[s];
+    const spct = st.total > 0 ? Math.round((st.correct / st.total) * 100) : 0;
+    return `
+    <div class="sb-card ${si.cls}">
+      <div class="sb-name ${si.cls}">${si.icon} ${si.label}</div>
+      <div class="sb-score">${st.correct}/${st.total} <span style="font-size:0.9rem;color:var(--muted)">(${spct}%)</span></div>
+      <div style="font-size:0.72rem;color:var(--muted);margin-top:4px">${st.wrong} wrong · ${st.skipped} skipped · ≈${st.score100}/100</div>
+      <div class="sb-bar-track"><div class="sb-bar-fill ${si.cls}" style="width:${spct}%"></div></div>
+    </div>`;
+  }).join('');
+
+  const reviewHTML = questions.map((q, i) => {
+    const ua        = userAnswers[i];
+    const isCorrect = ua === q.ans;
+    const isSkipped = ua === null;
+    const status      = isSkipped ? 'skipped' : isCorrect ? 'correct' : 'wrong';
+    const statusLabel = isSkipped ? 'Skipped'  : isCorrect ? '✓ Correct' : '✗ Wrong';
+    const si          = SUBJECT_INFO[q.subject] || { label: q.subject, cls: 'eng' };
+    let ansText = `Correct answer: <span class="correct-ans">${['A','B','C','D'][q.ans]}. ${q.opts[q.ans]}</span>`;
+    if (!isSkipped && !isCorrect) ansText = `Your answer: <span class="wrong-chosen">${['A','B','C','D'][ua]}. ${q.opts[ua]}</span><br>${ansText}`;
+    if (isSkipped) ansText = `Not attempted — ${ansText}`;
+    if (q.explanation) ansText += `<br><span class="expl">💡 ${q.explanation}</span>`;
+    const passageTag = q.passage && PASSAGES[q.passage]
+      ? `<span style="font-size:0.62rem;color:var(--eng);background:rgba(100,181,246,0.1);border:1px solid rgba(100,181,246,0.25);border-radius:4px;padding:2px 7px;font-family:'Space Mono',monospace">${PASSAGES[q.passage].label}</span>`
+      : '';
+    return `
+    <div class="review-item ri-${status}" data-subj="${q.subject}" data-status="${status}">
+      <div class="ri-header">
+        <span class="ri-qnum">Q${String(i+1).padStart(3,'0')}</span>
+        <span class="ri-status ${status}">${statusLabel}</span>
+        <span class="q-subj-badge ${si.cls}" style="margin-left:0">${si.label}</span>
+        ${passageTag}
+        <span class="ri-topic">${q.topic}</span>
+      </div>
+      <div class="ri-question">${q.q}</div>
+      <div class="ri-ans">${ansText}</div>
+    </div>`;
+  }).join('');
+
+  // Weak-topic analysis -> deep links into the practice centre
+  const topicStats = {};
+  questions.forEach((q, i) => {
+    const k = q.subject + '||' + q.topic;
+    topicStats[k] = topicStats[k] || { s: q.subject, t: q.topic, miss: 0, total: 0 };
+    topicStats[k].total++;
+    if (userAnswers[i] !== q.ans) topicStats[k].miss++;
+  });
+  const weak = Object.values(topicStats).filter(m => m.miss > 0)
+    .sort((a, b) => b.miss - a.miss || (b.miss / b.total) - (a.miss / a.total)).slice(0, 5);
+  const weakHTML = weak.length ? `
+    <div style="margin-bottom:24px">
+      <div class="review-title" style="margin-bottom:12px">Revise these topics first</div>
+      ${weak.map(w => `<a class="weak-link" href="practice.html?subject=${w.s}&topic=${encodeURIComponent(w.t)}"><span>${SUBJECT_INFO[w.s].icon} ${SUBJECT_INFO[w.s].label} · ${w.t}</span><span class="weak-miss">${w.miss} of ${w.total} missed →</span></a>`).join('')}
+    </div>` : '';
+
+  // Store result data for download
+  window._resultData = { guestName, selectedSubjects, totalCorrect, totalWrong, totalSkipped, pct, jambScore, grade, subjStats, date: new Date().toLocaleString('en-NG') };
+
+  resultScreen.innerHTML = `
+    <div class="result-hero">
+      <div class="badge">Mock Complete — Hasbal Tutorial Centre</div>
+      <div style="font-size:0.78rem;color:var(--muted);margin-bottom:4px">⚠️ NOT affiliated with JAMB Nigeria</div>
+      <div class="score-ring">
+        <svg width="160" height="160" viewBox="0 0 160 160">
+          <circle cx="80" cy="80" r="66" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="12"/>
+          <circle cx="80" cy="80" r="66" fill="none" stroke="${gradeColor}" stroke-width="12"
+            stroke-dasharray="${circumference}" stroke-dashoffset="${offset}" stroke-linecap="round"
+            style="transition:stroke-dashoffset 1.2s ease"/>
+        </svg>
+        <div class="score-center">
+          <span class="score-pct">${pct}%</span>
+          <span class="score-lbl">Score</span>
+        </div>
+      </div>
+      <div class="result-grade" style="color:${gradeColor}">${grade}</div>
+      <p class="result-msg">${msg}</p>
+      <div style="margin-top:16px;background:rgba(255,214,0,0.08);border:1px solid rgba(255,214,0,0.25);border-radius:12px;padding:14px 20px;display:inline-block">
+        <div style="font-family:'Space Mono',monospace;font-size:0.65rem;color:var(--muted);letter-spacing:0.1em;text-transform:uppercase">Estimated UTME-style score (practice)</div>
+        <div style="font-size:2rem;font-weight:700;color:var(--gold);font-family:'Space Mono',monospace">${jambScore} / 400</div>
+        <div style="font-size:0.7rem;color:var(--muted);max-width:340px;margin-top:6px;line-height:1.5">Each subject is scaled to 100 marks and added up. JAMB publishes no official conversion, so treat this as a guide, not a prediction of your real score.</div>
+      </div>
+    </div>
+
+    <div class="result-stats">
+      <div class="result-stat rs-correct"><span class="rs-num">${totalCorrect}</span><span class="rs-lbl">Correct</span></div>
+      <div class="result-stat rs-wrong"><span class="rs-num">${totalWrong}</span><span class="rs-lbl">Wrong</span></div>
+      <div class="result-stat rs-skip"><span class="rs-num">${totalSkipped}</span><span class="rs-lbl">Skipped</span></div>
+      <div class="result-stat rs-score"><span class="rs-num">${totalCorrect}/${questions.length}</span><span class="rs-lbl">Total Score</span></div>
+    </div>
+
+    <div style="margin-bottom:16px">
+      <div class="review-title" style="margin-bottom:16px">Subject Breakdown</div>
+      <div class="subj-breakdown">${subjBreakdownHTML}</div>
+    </div>
+
+    ${weakHTML}
+    <div style="text-align:center;margin-bottom:32px;display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
+      <a class="btn-start" href="practice.html" style="font-size:0.88rem;padding:13px 32px;text-decoration:none;display:inline-block">📚 Practise by subject</a>
+      <button class="btn-start" onclick="downloadResult()" style="font-size:0.88rem;padding:13px 32px;background:var(--gold);color:var(--navy)">⬇ Download Result</button>
+      <button class="btn-start" onclick="location.reload()" style="font-size:0.88rem;padding:13px 32px">↩ Retake (New Shuffle)</button>
+    </div>
+
+    <div class="review-section">
+      <div class="review-title">Full Question Review</div>
+      <div class="review-filter">
+        <button class="rf-btn active" id="rf-all" onclick="filterReview('all')">All (${questions.length})</button>
+        <button class="rf-btn" id="rf-wrong" onclick="filterReview('wrong')">✗ Wrong (${totalWrong})</button>
+        <button class="rf-btn" id="rf-skipped" onclick="filterReview('skipped')">Skipped (${totalSkipped})</button>
+        <button class="rf-btn" id="rf-correct" onclick="filterReview('correct')">✓ Correct (${totalCorrect})</button>
+      </div>
+      <div id="review-container">${reviewHTML}</div>
+    </div>
+
+    <div class="non-affil" style="margin-top:32px">
+      ⚠️ <strong>Disclaimer:</strong> This mock examination is produced independently by Hasbal Tutorial Centre for practice only.
+      It is <strong>NOT affiliated with, endorsed by, or connected to JAMB Nigeria</strong>. Scores here do not represent official JAMB results.
+    </div>
+  `;
+}
+
+function filterReview(status) {
+  document.querySelectorAll('.rf-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('rf-' + status).classList.add('active');
+  document.querySelectorAll('.review-item').forEach(item => {
+    item.style.display = (status === 'all' || item.dataset.status === status) ? 'block' : 'none';
+  });
+}
+
+// ====================================================
+//  SUBJECT SELECTION
+// ====================================================
+function showSubjectSelect() {
+  document.getElementById('subject-select-screen').style.display = 'block';
+  renderSubjectSelect();
+}
+
+function renderSubjectSelect() {
+  const grid = document.getElementById('ss-grid');
+  const chosen = selectedSubjects.filter(s => s !== 'english');
+  grid.innerHTML = ELECTIVE_SUBJECTS.map(s => {
+    const si = SUBJECT_INFO[s];
+    const isSelected = chosen.includes(s);
+    return `
+    <div class="ss-card ${isSelected ? 'selected' : ''}" id="sscard-${s}" onclick="toggleSubject('${s}')">
+      <div class="ss-icon">${si.icon}</div>
+      <div class="ss-info">
+        <div class="ss-name">${si.label}</div>
+        <div class="ss-desc">${si.count} questions — ${si.desc}</div>
+      </div>
+      <div class="ss-check" id="sscheck-${s}">${isSelected ? '✓' : ''}</div>
+    </div>`;
+  }).join('');
+  updateSubjectCounter();
+}
+
+function toggleSubject(s) {
+  const chosen = selectedSubjects.filter(sub => sub !== 'english');
+  if (chosen.includes(s)) {
+    // Deselect
+    selectedSubjects = selectedSubjects.filter(sub => sub !== s);
+  } else {
+    if (chosen.length >= 3) {
+      showAlert({ icon:'⚠️', title:'Maximum 3 Subjects', msg:'You can only select 3 elective subjects (plus Use of English). Deselect one before adding another.' });
+      return;
+    }
+    selectedSubjects.push(s);
+  }
+  // Update card UI
+  const card  = document.getElementById('sscard-' + s);
+  const check = document.getElementById('sscheck-' + s);
+  const isNowSelected = selectedSubjects.includes(s);
+  card.classList.toggle('selected', isNowSelected);
+  check.textContent = isNowSelected ? '✓' : '';
+  updateSubjectCounter();
+}
+
+function updateSubjectCounter() {
+  const chosen = selectedSubjects.filter(s => s !== 'english').length;
+  const counter  = document.getElementById('ss-counter');
+  const btn      = document.getElementById('ss-confirm-btn');
+  if (chosen === 3) {
+    counter.innerHTML = `<span style="color:var(--green)">✓ USE OF ENGLISH + ${selectedSubjects.filter(s=>s!=='english').map(s=>SUBJECT_INFO[s].label).join(', ').toUpperCase()} — READY</span>`;
+    btn.disabled = false;
+    btn.style.opacity = '1';
+    btn.style.cursor  = 'pointer';
+  } else {
+    const need = 3 - chosen;
+    counter.textContent = `SELECT ${need} MORE SUBJECT${need !== 1 ? 'S' : ''} TO CONTINUE`;
+    btn.disabled = true;
+    btn.style.opacity = '0.4';
+    btn.style.cursor  = 'not-allowed';
+  }
+}
+
+function applyPreset(preset) {
+  const presets = {
+    science:    ['chemistry', 'biology', 'physics'],
+    commercial: ['mathematics', 'economics', 'accounting'],
+    arts:       ['government', 'economics', 'mathematics'],
+  };
+  const subs = presets[preset];
+  if (!subs) return;
+  selectedSubjects = ['english', ...subs];
+  renderSubjectSelect();
+}
+
+function confirmSubjects() {
+  if (selectedSubjects.filter(s => s !== 'english').length !== 3) return;
+  document.getElementById('subject-select-screen').style.display = 'none';
+  startQuiz(); // shows intro with selected subjects
+}
+
+// ====================================================
+//  DOWNLOAD RESULT — Google Sites safe (no popups)
+//  Uses a data: URI on an <a> tag — works in iframes
+// ====================================================
+function downloadResult() {
+  const d = window._resultData;
+  if (!d) return;
+
+  const subjectLines = d.selectedSubjects.map(s => {
+    const si = SUBJECT_INFO[s];
+    const st = d.subjStats[s];
+    const spct = st.total > 0 ? Math.round((st.correct / st.total) * 100) : 0;
+    return `${si.label.padEnd(20)} ${st.correct}/${st.total} (${spct}%)   Correct: ${st.correct}  Wrong: ${st.wrong}  Skipped: ${st.skipped}`;
+  }).join('\n');
+
+  const text = [
+    '╔══════════════════════════════════════════════════╗',
+    '║       HASBAL TUTORIAL CENTRE — MOCK RESULT       ║',
+    '║             JAMB UTME PRACTICE EXAM              ║',
+    '╚══════════════════════════════════════════════════╝',
+    '',
+    `Name          : ${d.guestName || 'Student'}`,
+    `Date          : ${d.date}`,
+    `Subjects      : ${d.selectedSubjects.map(s => SUBJECT_INFO[s].label).join(', ')}`,
+    '',
+    '──────────────────────────────────────────────────',
+    '  OVERALL SCORE',
+    '──────────────────────────────────────────────────',
+    `  Score        : ${d.totalCorrect} / ${d.selectedSubjects.length === 4 ? 180 : 60 + (d.selectedSubjects.length - 1) * 40}  (${d.pct}%)`,
+    `  Estimated UTME-style score (practice) : ${d.jambScore} / 400`,
+    `  Grade        : ${d.grade}`,
+    `  Correct      : ${d.totalCorrect}`,
+    `  Wrong        : ${d.totalWrong}`,
+    `  Skipped      : ${d.totalSkipped}`,
+    '',
+    '──────────────────────────────────────────────────',
+    '  SUBJECT BREAKDOWN',
+    '──────────────────────────────────────────────────',
+    subjectLines,
+    '',
+    '──────────────────────────────────────────────────',
+    '⚠ DISCLAIMER: This result is from an independent',
+    '  practice exam by Hasbal Tutorial Centre.',
+    '  It is NOT affiliated with JAMB Nigeria and does',
+    '  NOT represent official JAMB UTME scores.',
+    '──────────────────────────────────────────────────',
+  ].join('\n');
+
+  // Build a downloadable link without opening a popup window
+  const blob = new Blob([text], { type: 'text/plain' });
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href     = url;
+  a.download = `Hasbal_MockResult_${(d.guestName || 'Student').replace(/\s+/g,'_')}_${new Date().toISOString().slice(0,10)}.txt`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  setTimeout(() => URL.revokeObjectURL(url), 2000);
+}
+</script>
+</body>
+</html>
