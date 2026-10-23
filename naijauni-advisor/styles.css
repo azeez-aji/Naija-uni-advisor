@@ -333,3 +333,6 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
 .practice-links { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
 .chip-link { text-decoration: none; font-size: .88rem; font-weight: 600; color: var(--ink-900); background: #fff; border: 1.5px solid var(--line); border-radius: 99px; padding: 7px 14px; }
 .chip-link:hover { border-color: var(--teal-600); }
+
+.deepdive-sources { font-size: .84rem; color: rgba(255,255,255,.75); margin-bottom: 14px; line-height: 1.7; }
+.deepdive-sources a { color: var(--gold-300); }

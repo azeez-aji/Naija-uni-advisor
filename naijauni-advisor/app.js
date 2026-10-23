@@ -885,20 +885,46 @@ function renderDeepDiveSection(r) {
           olevel: state.olevel,
           careerInterests: state.careerInterests,
           ruleBasedBand: BAND_META[r.band].label,
-          threshold: r.threshold
+          aggregatePct: r.aggregatePct,
+          threshold: r.threshold,
+          postUtmeIncluded: r.postUtmeIncluded
         })
       });
-      if (!res.ok) throw new Error("Request failed: " + res.status);
-      const data = await res.json();
+      let data = null;
+      try { data = await res.json(); } catch (e) { /* non-JSON error page */ }
+      if (!res.ok || !data || !data.analysis) {
+        const err = new Error("deep-dive failed");
+        err.code = data && data.error;
+        throw err;
+      }
       output.innerHTML = "";
       const textBlock = el("div", { class: "deepdive-text" });
-      textBlock.innerHTML = simpleMarkdownToHtml(data.analysis || "No analysis returned.");
+      textBlock.innerHTML = simpleMarkdownToHtml(data.analysis);
       output.appendChild(textBlock);
+      if (data.grounded === false) {
+        output.appendChild(el("div", { class: "deepdive-loading" },
+          "Live web search wasn't available for this answer, so treat the specifics as general guidance and confirm on the institution's portal."));
+      }
+      if (Array.isArray(data.sources) && data.sources.length) {
+        output.appendChild(el("div", { class: "deepdive-sources" }, [
+          el("strong", {}, "Sources checked: "),
+          ...data.sources.flatMap((s, i) => [
+            i ? " · " : "",
+            el("a", { href: s.url, target: "_blank", rel: "noopener noreferrer" }, s.title || "source")
+          ])
+        ]));
+      }
       btn.remove();
     } catch (e) {
+      const messages = {
+        busy: "The AI deep-dive has reached its limit for now. Please try again later — your instant verdict above is unaffected.",
+        slow_down: "That was a lot of requests in a short time. Wait a minute and try again.",
+        not_configured: "The AI deep-dive isn't switched on for this site yet. Your instant verdict above is unaffected.",
+        key_rejected: "The AI deep-dive is temporarily unavailable. Your instant verdict above is unaffected."
+      };
       output.innerHTML = "";
       output.appendChild(el("div", { class: "deepdive-error" },
-        "Couldn't reach the deep-dive service right now. This feature needs the site's Anthropic API key to be configured — if you're the site owner, check the Netlify function logs. Your rule-based verdict above is unaffected."));
+        messages[e.code] || "Couldn't reach the deep-dive service right now. Your instant verdict above is unaffected."));
       btn.disabled = false;
       btn.textContent = "Try again →";
     }
