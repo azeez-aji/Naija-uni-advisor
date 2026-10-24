@@ -5,11 +5,11 @@
 //
 // Netlify environment variables:
 //   GEMINI_API_KEY  (required)  your Google AI Studio key — mark it as a secret, scope: Functions
-//   GEMINI_MODEL    (optional)  defaults to gemini-2.5-flash. Google renames/retires models often;
-//                               if the deep-dive suddenly stops working, set this to a current
-//                               Flash model name from https://aistudio.google.com and redeploy.
+//   GEMINI_MODEL    (optional)  tried first if set. Google renames/retires models often (2.5 Flash was
+//                               closed to new accounts in 2026), so the function also tries the
+//                               fallbacks below automatically when a model returns 404.
 
-const MODEL = process.env.GEMINI_MODEL || "gemini-2.5-flash";
+const MODELS = [...new Set([process.env.GEMINI_MODEL, "gemini-3.8-flash", "gemini-flash-latest"].filter(Boolean))];
 const ENDPOINT = (m) => `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(m)}:generateContent`;
 
 // Light per-visitor throttle (best effort — serverless instances don't share memory) so one
@@ -27,8 +27,8 @@ function throttled(ip) {
 const clip = (v, n) => String(v == null ? "" : v).replace(/[\u0000-\u001f]/g, " ").trim().slice(0, n);
 const json = (statusCode, obj) => ({ statusCode, headers: { "Content-Type": "application/json" }, body: JSON.stringify(obj) });
 
-async function callGemini(apiKey, body) {
-  const res = await fetch(ENDPOINT(MODEL), {
+async function callGemini(apiKey, model, body) {
+  const res = await fetch(ENDPOINT(model), {
     method: "POST",
     headers: { "Content-Type": "application/json", "x-goog-api-key": apiKey },
     body: JSON.stringify(body)
@@ -116,21 +116,28 @@ exports.handler = async function (event) {
   };
 
   try {
-    // 1) Grounded answer (live Google Search)
-    let r = await callGemini(apiKey, { ...baseBody, tools: [{ google_search: {} }] });
-    let grounded = true;
-
-    // 2) If search grounding isn't available on this key/model/quota, fall back to an
-    //    ungrounded answer (clearly flagged) rather than failing outright.
-    if (!r.ok && [400, 403, 404, 429].includes(r.status)) {
-      console.error("Grounded call failed", r.status, (r.raw || "").slice(0, 400));
-      r = await callGemini(apiKey, baseBody);
-      grounded = false;
+    // Try each model in turn. A 404 means that model is retired/unavailable -> next model.
+    // For a working model: first with live Google Search; if search grounding is refused
+    // (400/403/429) retry the same model without it and flag the answer as ungrounded.
+    let r = null, grounded = true, usedModel = null;
+    for (const model of MODELS) {
+      grounded = true;
+      r = await callGemini(apiKey, model, { ...baseBody, tools: [{ google_search: {} }] });
+      if (r.status === 404) { console.error("Model unavailable:", model, (r.raw || "").slice(0, 300)); continue; }
+      if (!r.ok && [400, 403, 429].includes(r.status) && !/API key not valid/i.test(r.raw || "")) {
+        console.error("Grounded call failed", model, r.status, (r.raw || "").slice(0, 400));
+        grounded = false;
+        r = await callGemini(apiKey, model, baseBody);
+        if (r.status === 404) { console.error("Model unavailable:", model); continue; }
+      }
+      usedModel = model;
+      break;
     }
 
-    if (!r.ok) {
-      console.error("Gemini call failed", r.status, (r.raw || "").slice(0, 400));
-      const code = r.status === 429 ? "busy" : r.status === 401 || r.status === 403 ? "key_rejected" : "upstream";
+    if (!r || !r.ok) {
+      console.error("Gemini call failed", r && r.status, ((r && r.raw) || "").slice(0, 400));
+      const bad = r && (r.status === 401 || r.status === 403 || /API key not valid/i.test(r.raw || ""));
+      const code = r && r.status === 429 ? "busy" : bad ? "key_rejected" : r && r.status === 404 ? "model_unavailable" : "upstream";
       return json(502, { error: code });
     }
 
@@ -141,7 +148,7 @@ exports.handler = async function (event) {
       return json(502, { error: "empty" });
     }
 
-    return json(200, { analysis, sources: grounded ? extractSources(r.data) : [], grounded, model: MODEL });
+    return json(200, { analysis, sources: grounded ? extractSources(r.data) : [], grounded, model: usedModel });
   } catch (err) {
     console.error("Unexpected error", String(err));
     return json(500, { error: "unexpected" });
