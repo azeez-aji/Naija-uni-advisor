@@ -1,6 +1,6 @@
 # NaijaUni Advisor
 
-An instant, honest JAMB/UTME admission-chances checker for Nigerian students —
+An instant, honest JAMB/UTME admission-chances checker for Nigerian students -
 rule-based verdict runs entirely in the browser (works offline once loaded),
 with an optional AI deep-dive for current, researched context.
 
