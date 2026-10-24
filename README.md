@@ -20,9 +20,9 @@ netlify/functions/deep-analysis.js   # optional AI deep-dive (needs ANTHROPIC_AP
 
 ## The three parts, and how they connect
 
-1. **Advisor** — course + institution + score → honest verdict, then links to practise exactly the subjects that course needs.
-2. **Practice centre** — one subject at a time; filter by topic and difficulty; Learn mode (instant explanation) or Exam mode; flag questions; retry the ones you missed; progress stored on the student's device.
-3. **Full mock** — 4 subjects, 180 questions, 2 hours. Each paper is sampled from the bank, so no two attempts are identical. Results list the weakest topics and link straight back into the practice centre.
+1. **Advisor**: course + institution + score → honest verdict, then links to practise exactly the subjects that course needs.
+2. **Practice centre**: one subject at a time; filter by topic and difficulty; Learn mode (instant explanation) or Exam mode; flag questions; retry the ones you missed; progress stored on the student's device.
+3. **Full mock**: 4 subjects, 180 questions, 2 hours. Each paper is sampled from the bank, so no two attempts are identical. Results list the weakest topics and link straight back into the practice centre.
 
 All three read the same `questions.js`, so there is one answer key.
 
@@ -35,7 +35,7 @@ Keep the app on Netlify and give it its own subdomain, e.g. **jamb.hasbal.com.ng
 Questions live in `questions.js` as records: `{ id, subject, topic, difficulty, q, opts[4], ans(0-3), explanation, status, origin }`.
 
 1. Append new records to `QUESTION_BANK` using the next free id (e.g. `phy-0064`).
-2. Run `node tools/validate-questions.js` — it checks ids, four distinct options, answer index, duplicates, mock-exam capacity and prints coverage per topic.
+2. Run `node tools/validate-questions.js` : it checks ids, four distinct options, answer index, duplicates, mock-exam capacity and prints coverage per topic.
 3. Commit. Students get the update on their next visit (the service worker is network-first).
 
 **Status honesty:** every question is currently `ai-reviewed`, meaning written/checked by AI but **not yet signed off by a subject teacher**. Change a record to `verified` only after a teacher has checked it. About 340 older questions still have no worked explanation or difficulty grade; the practice page says so rather than hiding it.
@@ -46,23 +46,15 @@ Questions live in `questions.js` as records: `{ id, subject, topic, difficulty, 
 - **Not confirmed by JAMB yet:** 2027 registration dates, syllabus changes and the 2027 English reading text. The mock's reading-text questions use *The Lekki Headmaster* (confirmed through 2026) and say so on screen. Check jamb.gov.ng / IBASS when 2027 details are released.
 - **Scoring:** JAMB publishes no official conversion. The mock reports an *estimated* UTME-style score (each subject scaled to 100 marks, English 60 questions, others 40) and labels it as an estimate.
 
-## SECURITY — do this now
+## Deploy it
 
-The original paid version of `cbt-exam.html` contained a live **JSONBin master key**, EmailJS identifiers and your OPay details in public page source. Those lived in the old deployment and in your GitHub history (the key is still visible in earlier commits even though this version removes it). Because the JSONBin store held student names, emails and phone numbers:
-
-1. Log in to JSONBin and **revoke/rotate the master key**, then delete the old bin.
-2. In EmailJS, regenerate keys if you still use that account.
-3. If you later add paid access, do not repeat the client-side token scheme: use Paystack/Flutterwave with a Netlify Function that verifies the payment and issues a signed token. Never put secret keys in page code.
-
-## Deploy it (same flow you already use for Hasbal Global Solutions)
-
-1. **Create a new GitHub repo** — e.g. `AbuKhayrAZ/naijauni-advisor`. Upload every
+1. **Create a new GitHub repo** : e.g. `AbuKhayrAZ/naijauni-advisor`. Upload every
    file in this folder, keeping the folder structure intact (especially
-   `netlify/functions/deep-analysis.js` — it must stay in that exact path).
-2. **Connect it in Netlify** — "Add new site" → "Import an existing project" →
+   `netlify/functions/deep-analysis.js` : it must stay in that exact path).
+2. **Connect it in Netlify** : "Add new site" → "Import an existing project" →
    pick the new repo. Build settings are already defined in `netlify.toml`, so
    you can leave the build command blank and publish directory as `.`.
-3. **Add your Anthropic API key** — in Netlify: Site settings → Environment
+3. **Add your Anthropic or Gemini API key** : in Netlify: Site settings → Environment
    variables → add `ANTHROPIC_API_KEY` with your key from
    [console.anthropic.com](https://console.anthropic.com). Without this, the
    instant rule-based verdict still works perfectly — only the "AI deep-dive"
