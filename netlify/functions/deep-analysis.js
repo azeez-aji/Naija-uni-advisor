@@ -1,19 +1,24 @@
 // Netlify Function: /.netlify/functions/deep-analysis
 //
-// Uses Google Gemini (AI Studio key) with Grounding with Google Search to produce a short,
-// current, source-linked read-out for one student's chosen course and institution.
+// Written deep-dive on a student's chosen course + institution, using Google Gemini.
+//
+// FREE BY DEFAULT: Google's free tier covers text generation on the Flash/Flash-Lite models, but NOT
+// "Grounding with Google Search" on Gemini 3 models (that needs a paid tier). So by default this
+// function makes ONE plain call and clearly tells the student the answer is general guidance, not a
+// live web search. If you later enable billing, set GEMINI_USE_SEARCH=true to add live Google Search.
 //
 // Netlify environment variables:
-//   GEMINI_API_KEY  (required)  your Google AI Studio key — mark it as a secret, scope: Functions
-//   GEMINI_MODEL    (optional)  tried first if set. Google renames/retires models often (2.5 Flash was
-//                               closed to new accounts in 2026), so the function also tries the
-//                               fallbacks below automatically when a model returns 404.
+//   GEMINI_API_KEY      (required) Google AI Studio key — mark as secret, scope: Functions
+//   GEMINI_MODEL        (optional) a model tried FIRST, e.g. if Google renames models again
+//   GEMINI_USE_SEARCH   (optional) "true" = request Google Search grounding (paid tier only)
 
-const MODELS = [...new Set([process.env.GEMINI_MODEL, "gemini-3.8-flash", "gemini-flash-latest"].filter(Boolean))];
+// Free-tier text models, in order. A 404 (retired) or 429 (that model's quota used) moves to the next.
+const MODELS = [...new Set([process.env.GEMINI_MODEL, "gemini-3.5-flash-lite", "gemini-3.8-flash", "gemini-3.1-flash-lite"].filter(Boolean))];
+const USE_SEARCH = String(process.env.GEMINI_USE_SEARCH || "").toLowerCase() === "true";
+const TIMEOUT_MS = 20000; // answer or fail before Netlify's own function time limit
 const ENDPOINT = (m) => `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(m)}:generateContent`;
 
-// Light per-visitor throttle (best effort — serverless instances don't share memory) so one
-// person can't burn the free daily quota for everyone.
+// Light per-visitor throttle (best effort — serverless instances don't share memory).
 const hits = new Map();
 function throttled(ip) {
   const now = Date.now();
@@ -28,15 +33,25 @@ const clip = (v, n) => String(v == null ? "" : v).replace(/[\u0000-\u001f]/g, " 
 const json = (statusCode, obj) => ({ statusCode, headers: { "Content-Type": "application/json" }, body: JSON.stringify(obj) });
 
 async function callGemini(apiKey, model, body) {
-  const res = await fetch(ENDPOINT(model), {
-    method: "POST",
-    headers: { "Content-Type": "application/json", "x-goog-api-key": apiKey },
-    body: JSON.stringify(body)
-  });
-  const raw = await res.text();
-  let data = null;
-  try { data = JSON.parse(raw); } catch (e) { /* non-JSON error body */ }
-  return { ok: res.ok, status: res.status, data, raw };
+  const ctrl = new AbortController();
+  const timer = setTimeout(() => ctrl.abort(), TIMEOUT_MS);
+  try {
+    const res = await fetch(ENDPOINT(model), {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "x-goog-api-key": apiKey },
+      body: JSON.stringify(body),
+      signal: ctrl.signal
+    });
+    const raw = await res.text();
+    let data = null;
+    try { data = JSON.parse(raw); } catch (e) { /* non-JSON error body */ }
+    return { ok: res.ok, status: res.status, data, raw };
+  } catch (err) {
+    if (err && err.name === "AbortError") return { ok: false, status: 0, timeout: true, raw: "timeout" };
+    throw err;
+  } finally {
+    clearTimeout(timer);
+  }
 }
 
 function extractText(data) {
@@ -84,14 +99,18 @@ exports.handler = async function (event) {
   const postUtmeIncluded = !!p.postUtmeIncluded;
 
   const today = new Date().toDateString();
-  const systemInstruction =
+  const base =
     `You are an experienced, honest Nigerian university admissions advisor. Today is ${today}. ` +
-    `Never give false hope and never be needlessly discouraging. Use Google Search to find CURRENT, specific information ` +
-    `about the named institution and course (departmental cut-off marks, Post-UTME screening format and weighting, ` +
-    `recent admission news, deadlines). State a number only if you found it; if you could not find department-specific ` +
-    `data, say so plainly instead of guessing. Distinguish what is confirmed from what is typical. Do not claim 2027 ` +
-    `rules are official unless a source says so. Write about 300-400 words in plain prose with a few short "- " bullet ` +
-    `lists. Use **bold** sparingly. No headings deeper than "##". Do not repeat the student's profile back.`;
+    `Never give false hope and never be needlessly discouraging. Write about 300-400 words in plain prose with a few ` +
+    `short "- " bullet lists. Use **bold** sparingly. No headings deeper than "##". Do not repeat the student's profile back. `;
+  const systemInstruction = USE_SEARCH
+    ? base + `Use Google Search to find CURRENT, specific information about the named institution and course ` +
+      `(departmental cut-offs, Post-UTME format and weighting, recent news, deadlines). State a number only if you found it; ` +
+      `otherwise say you could not find it. Do not claim 2027 rules are official unless a source says so.`
+    : base + `You have NO web access in this mode. Do NOT state specific cut-off marks, dates, fees or deadlines as fact, and ` +
+      `never invent figures. Explain how admission at this kind of institution typically works, what the student's profile ` +
+      `suggests, and exactly what to verify (name the official places to check, such as the institution's admissions page, ` +
+      `JAMB CAPS and the JAMB brochure/IBASS). Say clearly where you are describing a general pattern rather than a confirmed fact.`;
 
   const userPrompt =
     `Student profile:\n` +
@@ -104,40 +123,40 @@ exports.handler = async function (event) {
     (aggregate != null && threshold != null
       ? `, an aggregate of about ${aggregate}% against a realistic line of about ${threshold}% for this course tier (${postUtmeIncluded ? "includes the student's Post-UTME score" : "JAMB + O'Level only; Post-UTME not yet included"}).`
       : ".") +
-    `\n\nResearch this institution and course for the current admissions cycle, then write a short deep-dive that:\n` +
-    `1. Confirms or corrects our estimate using anything specific to this department (recent cut-offs, Post-UTME format/weighting, competition).\n` +
-    `2. Flags anything time-sensitive (deadlines, portal status, policy changes).\n` +
-    `3. Gives one or two concrete next actions beyond generic advice.`;
+    `\n\nWrite a short deep-dive that:\n` +
+    `1. Interprets our estimate and what is helping or hurting this student's chances.\n` +
+    `2. Lists the specific things to verify for this institution and course before deciding.\n` +
+    `3. Gives two or three concrete next actions, including a realistic plan B.`;
 
   const baseBody = {
     systemInstruction: { parts: [{ text: systemInstruction }] },
     contents: [{ role: "user", parts: [{ text: userPrompt }] }],
-    generationConfig: { maxOutputTokens: 4096 }
+    generationConfig: { maxOutputTokens: 2048 }
   };
 
   try {
-    // Try each model in turn. A 404 means that model is retired/unavailable -> next model.
-    // For a working model: first with live Google Search; if search grounding is refused
-    // (400/403/429) retry the same model without it and flag the answer as ungrounded.
-    let r = null, grounded = true, usedModel = null;
+    let r = null, grounded = false, usedModel = null;
     for (const model of MODELS) {
-      grounded = true;
-      r = await callGemini(apiKey, model, { ...baseBody, tools: [{ google_search: {} }] });
-      if (r.status === 404) { console.error("Model unavailable:", model, (r.raw || "").slice(0, 300)); continue; }
-      if (!r.ok && [400, 403, 429].includes(r.status) && !/API key not valid/i.test(r.raw || "")) {
-        console.error("Grounded call failed", model, r.status, (r.raw || "").slice(0, 400));
-        grounded = false;
+      if (USE_SEARCH) {
+        r = await callGemini(apiKey, model, { ...baseBody, tools: [{ google_search: {} }] });
+        grounded = r.ok;
+        if (!r.ok && [400, 403, 429].includes(r.status) && !/API key not valid/i.test(r.raw || "")) {
+          console.error("Search-grounded call failed", model, r.status, (r.raw || "").slice(0, 300));
+          r = await callGemini(apiKey, model, baseBody);   // paid-tier search unavailable -> plain answer
+          grounded = false;
+        }
+      } else {
         r = await callGemini(apiKey, model, baseBody);
-        if (r.status === 404) { console.error("Model unavailable:", model); continue; }
       }
-      usedModel = model;
+      if (r.ok) { usedModel = model; break; }
+      console.error("Gemini call failed", model, r.status, (r.raw || "").slice(0, 300));
+      if (r.status === 404 || r.status === 429) continue;  // model retired, or its free quota used -> next model
       break;
     }
 
     if (!r || !r.ok) {
-      console.error("Gemini call failed", r && r.status, ((r && r.raw) || "").slice(0, 400));
       const bad = r && (r.status === 401 || r.status === 403 || /API key not valid/i.test(r.raw || ""));
-      const code = r && r.status === 429 ? "busy" : bad ? "key_rejected" : r && r.status === 404 ? "model_unavailable" : "upstream";
+      const code = !r ? "upstream" : r.timeout ? "timeout" : r.status === 429 ? "busy" : bad ? "key_rejected" : r.status === 404 ? "model_unavailable" : "upstream";
       return json(502, { error: code });
     }
 
