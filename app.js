@@ -860,8 +860,8 @@ function renderDeepDiveSection(r) {
   const wrap = el("div", { class: "card deepdive-card" });
   const header = el("div", { class: "deepdive-header" }, [
     el("div", {}, [
-      el("h2", {}, "Want more current detail?"),
-      el("p", { class: "step-hint" }, "The AI deep-dive researches this institution and course specifically — recent cut-off news, departmental quirks, and current market context.")
+      el("h2", {}, "Want a deeper written read?"),
+      el("p", { class: "step-hint" }, "A longer, plain-language analysis of your chances, what to verify for this institution and what to do next. It is general guidance from AI, not a live web search, so always confirm figures on the official portal.")
     ])
   ]);
   wrap.appendChild(header);
@@ -903,7 +903,7 @@ function renderDeepDiveSection(r) {
       output.appendChild(textBlock);
       if (data.grounded === false) {
         output.appendChild(el("div", { class: "deepdive-loading" },
-          "Live web search wasn't available for this answer, so treat the specifics as general guidance and confirm on the institution's portal."));
+          "This is general guidance from AI, not a live web search. Confirm cut-offs, dates and requirements on the institution's official portal and JAMB's CAPS."));
       }
       if (Array.isArray(data.sources) && data.sources.length) {
         output.appendChild(el("div", { class: "deepdive-sources" }, [
@@ -919,6 +919,8 @@ function renderDeepDiveSection(r) {
       const messages = {
         busy: "The AI deep-dive has reached its limit for now. Please try again later — your instant verdict above is unaffected.",
         slow_down: "That was a lot of requests in a short time. Wait a minute and try again.",
+        timeout: "The AI took too long to answer. Please try again in a moment.",
+        model_unavailable: "The AI deep-dive is being updated. Please try again later — your instant verdict above is unaffected.",
         not_configured: "The AI deep-dive isn't switched on for this site yet. Your instant verdict above is unaffected.",
         key_rejected: "The AI deep-dive is temporarily unavailable. Your instant verdict above is unaffected."
       };
