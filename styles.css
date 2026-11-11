@@ -289,9 +289,15 @@ main { max-width: var(--max-width); margin: 0 auto; padding: 20px 20px 80px; }
   font-size: 0.92rem; color: rgba(255,255,255,0.85); background: rgba(255,255,255,0.08);
   padding: 14px; border-radius: var(--radius-sm); margin-bottom: 14px;
 }
-.deepdive-text { font-size: 0.96rem; line-height: 1.65; margin-bottom: 16px; }
-.deepdive-text h3, .deepdive-text h4 { color: #fff; margin-top: 1em; }
-.deepdive-text ul { padding-left: 20px; }
+/* The global `p { color: ink-text }` rule is dark; inside this dark card every text element must be light. */
+.deepdive-card p, .deepdive-card li { color: rgba(255,255,255,0.92); }
+.deepdive-text { font-size: 1rem; line-height: 1.7; margin-bottom: 16px; color: #F3F8F7; }
+.deepdive-text p, .deepdive-text li { color: #F3F8F7; }
+.deepdive-text strong { color: #fff; font-weight: 700; }
+.deepdive-text em { color: #F3F8F7; }
+.deepdive-text h3, .deepdive-text h4 { color: #fff; margin: 1.2em 0 .4em; font-size: 1.05rem; }
+.deepdive-text ul, .deepdive-text ol { padding-left: 22px; margin: 0 0 1em; }
+.deepdive-text li { margin-bottom: 6px; }
 .deepdive-card .btn-primary { background: var(--gold-500); color: var(--ink-900); }
 .deepdive-card .btn-primary:hover { background: var(--gold-300); }
 

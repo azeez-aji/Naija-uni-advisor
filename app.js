@@ -938,19 +938,25 @@ function renderDeepDiveSection(r) {
 }
 
 function simpleMarkdownToHtml(md) {
-  const escaped = md.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-  return escaped
-    .split(/\n{2,}/)
-    .map(block => {
-      if (/^\s*[-*]\s+/.test(block)) {
-        const items = block.split(/\n/).filter(l => l.trim()).map(l => `<li>${l.replace(/^\s*[-*]\s+/, "")}</li>`).join("");
-        return `<ul>${items}</ul>`;
-      }
-      if (/^###\s+/.test(block)) return `<h4>${block.replace(/^###\s+/, "")}</h4>`;
-      if (/^##\s+/.test(block)) return `<h3>${block.replace(/^##\s+/, "")}</h3>`;
-      return `<p>${block.replace(/\n/g, "<br>").replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")}</p>`;
-    })
-    .join("");
+  // Tiny, safe renderer: input is escaped first, then headings, bullet/numbered lists, **bold** and *italic*.
+  const escaped = String(md).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  const inline = t => t
+    .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
+    .replace(/(^|[\s(])\*(?!\s)(.+?)\*(?=[\s).,;:!?]|$)/g, "$1<em>$2</em>");
+  let html = "", para = [], list = null;
+  const flushP = () => { if (para.length) { html += `<p>${inline(para.join(" "))}</p>`; para = []; } };
+  const flushL = () => { if (list) { html += `<${list.type}>${list.items.map(i => `<li>${inline(i)}</li>`).join("")}</${list.type}>`; list = null; } };
+  escaped.split(/\r?\n/).forEach(raw => {
+    const t = raw.trim();
+    if (!t) { flushP(); flushL(); return; }
+    let m;
+    if ((m = t.match(/^(#{1,4})\s+(.*)$/))) { flushP(); flushL(); html += m[1].length <= 2 ? `<h3>${inline(m[2])}</h3>` : `<h4>${inline(m[2])}</h4>`; return; }
+    if ((m = t.match(/^[-*\u2022]\s+(.*)$/))) { flushP(); if (!list || list.type !== "ul") { flushL(); list = { type: "ul", items: [] }; } list.items.push(m[1]); return; }
+    if ((m = t.match(/^\d+[.)]\s+(.*)$/))) { flushP(); if (!list || list.type !== "ol") { flushL(); list = { type: "ol", items: [] }; } list.items.push(m[1]); return; }
+    flushL(); para.push(t);
+  });
+  flushP(); flushL();
+  return html;
 }
 
 /* ---------- init ---------- */

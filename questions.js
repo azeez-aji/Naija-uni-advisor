@@ -1,5 +1,5 @@
 /**
- * NaijaUni Advisor / Hasbal Tutorial Centre — shared question bank
+ * NaijaUni Advisor / Princeko Edubiz Enterprise — shared question bank
  * Used by BOTH cbt-exam.html (full mock) and practice.html (subject practice),
  * so there is one answer key and one set of topics.
  *

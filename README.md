@@ -1,6 +1,6 @@
 # NaijaUni Advisor
 
-An instant, honest JAMB/UTME admission-chances checker for Nigerian students -
+An instant, honest JAMB/UTME admission-chances checker for Nigerian students —
 rule-based verdict runs entirely in the browser (works offline once loaded),
 with an optional AI deep-dive for current, researched context.
 
@@ -15,27 +15,30 @@ questions.js                   # NEW: ONE shared question bank used by both prac
 tools/validate-questions.js    # NEW: run before every deploy to catch broken questions
 manifest.json + sw.js          # installable PWA, network-first so updates always reach students
 netlify.toml                   # Netlify config + no-cache headers
-netlify/functions/deep-analysis.js   # optional AI deep-dive (needs ANTHROPIC_API_KEY)
+netlify/functions/deep-analysis.js   # optional AI deep-dive (needs GEMINI_API_KEY)
 ```
 
 ## The three parts, and how they connect
 
-1. **Advisor**: course + institution + score → honest verdict, then links to practise exactly the subjects that course needs.
-2. **Practice centre**: one subject at a time; filter by topic and difficulty; Learn mode (instant explanation) or Exam mode; flag questions; retry the ones you missed; progress stored on the student's device.
-3. **Full mock**: 4 subjects, 180 questions, 2 hours. Each paper is sampled from the bank, so no two attempts are identical. Results list the weakest topics and link straight back into the practice centre.
+1. **Advisor** — course + institution + score → honest verdict, then links to practise exactly the subjects that course needs.
+2. **Practice centre** — one subject at a time; filter by topic and difficulty; Learn mode (instant explanation) or Exam mode; flag questions; retry the ones you missed; progress stored on the student's device.
+3. **Full mock** — 4 subjects, 180 questions, 2 hours. Each paper is sampled from the bank, so no two attempts are identical. Results list the weakest topics and link straight back into the practice centre.
 
 All three read the same `questions.js`, so there is one answer key.
 
-## Hosting recommendation
+## Hosting
 
-Keep the app on Netlify and give it its own subdomain, e.g. **jamb.hasbal.com.ng** (Netlify → Domain management → Add domain; at your DNS provider add a `CNAME` for `jamb` pointing to your `*.netlify.app` address). Keep **blog.hasbal.com.ng** for articles that link into the app. Blogger cannot serve a multi-file app with a service worker, and an iframe would break installing it and working offline.
+The app is served from `naija-uni-advisor.hasbal.com.ng` (Netlify, deployed from GitHub). If you change the domain later, update the `<link rel="canonical">` tag in `index.html`, `practice.html` and `cbt-exam.html`, and set the new domain as the *primary* domain in Netlify so the old `netlify.app` address redirects to it.
 
 ## Updating the question bank
+
+See `CONTRIBUTING.md` for the step-by-step guide for teachers and helpers (a GitHub check runs the validator on every pull request).
+
 
 Questions live in `questions.js` as records: `{ id, subject, topic, difficulty, q, opts[4], ans(0-3), explanation, status, origin }`.
 
 1. Append new records to `QUESTION_BANK` using the next free id (e.g. `phy-0064`).
-2. Run `node tools/validate-questions.js` : it checks ids, four distinct options, answer index, duplicates, mock-exam capacity and prints coverage per topic.
+2. Run `node tools/validate-questions.js` — it checks ids, four distinct options, answer index, duplicates, mock-exam capacity and prints coverage per topic.
 3. Commit. Students get the update on their next visit (the service worker is network-first).
 
 **Status honesty:** every question is currently `ai-reviewed`, meaning written/checked by AI but **not yet signed off by a subject teacher**. Change a record to `verified` only after a teacher has checked it. About 340 older questions still have no worked explanation or difficulty grade; the practice page says so rather than hiding it.
@@ -46,19 +49,28 @@ Questions live in `questions.js` as records: `{ id, subject, topic, difficulty, 
 - **Not confirmed by JAMB yet:** 2027 registration dates, syllabus changes and the 2027 English reading text. The mock's reading-text questions use *The Lekki Headmaster* (confirmed through 2026) and say so on screen. Check jamb.gov.ng / IBASS when 2027 details are released.
 - **Scoring:** JAMB publishes no official conversion. The mock reports an *estimated* UTME-style score (each subject scaled to 100 marks, English 60 questions, others 40) and labels it as an estimate.
 
-## Deploy it
+## SECURITY — do this now
 
-1. **Create a new GitHub repo** : e.g. `AbuKhayrAZ/naijauni-advisor`. Upload every
+The original paid version of `cbt-exam.html` contained a live **JSONBin master key**, EmailJS identifiers and your OPay details in public page source. Those lived in the old deployment and in your GitHub history (the key is still visible in earlier commits even though this version removes it). Because the JSONBin store held student names, emails and phone numbers:
+
+1. Log in to JSONBin and **revoke/rotate the master key**, then delete the old bin.
+2. In EmailJS, regenerate keys if you still use that account.
+3. If you later add paid access, do not repeat the client-side token scheme: use Paystack/Flutterwave with a Netlify Function that verifies the payment and issues a signed token. Never put secret keys in page code.
+
+## Deploy it (GitHub → Netlify, the flow you already use)
+
+1. **Create a new GitHub repo** — e.g. `AbuKhayrAZ/naijauni-advisor`. Upload every
    file in this folder, keeping the folder structure intact (especially
-   `netlify/functions/deep-analysis.js` : it must stay in that exact path).
-2. **Connect it in Netlify** : "Add new site" → "Import an existing project" →
+   `netlify/functions/deep-analysis.js` — it must stay in that exact path).
+2. **Connect it in Netlify** — "Add new site" → "Import an existing project" →
    pick the new repo. Build settings are already defined in `netlify.toml`, so
    you can leave the build command blank and publish directory as `.`.
-3. **Add your Anthropic or Gemini API key** : in Netlify: Site settings → Environment
-   variables → add `ANTHROPIC_API_KEY` with your key from
-   [console.anthropic.com](https://console.anthropic.com). Without this, the
-   instant rule-based verdict still works perfectly — only the "AI deep-dive"
-   button needs the key.
+3. **Add your Gemini API key** — in Netlify: Project configuration → Environment
+   variables → add a variable named exactly `GEMINI_API_KEY` with your key from
+   [Google AI Studio](https://aistudio.google.com/apikey), tick "contains secret
+   values" and make sure it is available to **Functions**, then redeploy.
+   Without it, the instant rule-based verdict still works perfectly — only the
+   "AI deep-dive" button needs the key. Optional: `GEMINI_MODEL` to change the model.
 4. Deploy. Netlify auto-builds on every push to `main`, same as your other site.
 
 ## Updating content later
@@ -121,12 +133,17 @@ national minimum for that institution type.
 
 ## The AI deep-dive
 
-`netlify/functions/deep-analysis.js` calls the Anthropic API with web search
-enabled, so it can surface current, department-specific detail the static
-dataset can't (recent cut-off announcements, Post-UTME format changes, etc.).
-It costs a small amount per request against your Anthropic account — there's
-no rate limiting built in yet, so if this gets real traffic, consider adding
-a simple per-IP rate limit in the function before it goes wide.
+`netlify/functions/deep-analysis.js` calls Google Gemini. **Free by default:** Google's free tier
+covers plain text generation on its Flash / Flash-Lite models, but *not* Grounding with Google Search on the
+Gemini 3 models (that is paid-tier only). So the function makes one ordinary call, tells the student the
+answer is general guidance rather than a live web search, and instructs the model never to invent cut-off
+marks or dates. Models are tried in order (`gemini-3.5-flash-lite`, `gemini-3.8-flash`,
+`gemini-3.1-flash-lite`); a 404 (retired) or 429 (that model's free quota used) moves to the next one.
+Variables: `GEMINI_API_KEY` (required), `GEMINI_MODEL` (optional, tried first),
+`GEMINI_USE_SEARCH=true` (optional, only if you enable billing; adds live Google Search and source links).
+Free-tier prompts may be used by Google to improve its products, so the function never sends names — only
+scores, grades, course, institution and the optional career sentence. It validates input, throttles rapid
+repeats and gives up cleanly after 20 seconds.
 
 ## Troubleshooting
 
@@ -135,15 +152,14 @@ a simple per-IP rate limit in the function before it goes wide.
   instead of at the repo root). Either flatten the repo so `index.html` sits
   directly at the root, or in Netlify set **Base directory**, **Publish
   directory**, and **Functions directory** to point at the actual subfolder.
-- **AI deep-dive fails even with `ANTHROPIC_API_KEY` set:** check the model ID
-  in `deep-analysis.js` is current — Anthropic ships new model versions
-  regularly and an outdated ID returns an error that looks identical to a
-  missing/invalid key from the front end. Check Netlify's function logs
-  (Project → Logs & metrics → Functions) for the actual upstream error rather
-  than guessing from the browser.
+- **AI deep-dive fails even with the key set:** (1) the variable must be named
+  exactly `GEMINI_API_KEY` and be available to Functions; (2) you must redeploy
+  after adding it; (3) a model may have been retired or its free quota used — the function already tries the next model,
+  and you can put the name Google suggests in `GEMINI_MODEL`; (4) read Netlify's function logs
+  (Logs & metrics → Functions) for the real upstream error rather than guessing.
 - **Want zero ongoing AI cost:** the rule-based verdict (the whole wizard +
   results screen) needs no API key at all and works fully offline. You can
-  ship the site without ever setting `ANTHROPIC_API_KEY` — the deep-dive
+  ship the site without ever setting `GEMINI_API_KEY` — the deep-dive
   button will just show its "couldn't reach the service" message, and
   everything else works normally.
 - **A device (often Android) is stuck showing an old version of the site:**
